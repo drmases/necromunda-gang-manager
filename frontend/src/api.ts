@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { Gang, Fighter, Skill, Injury, Equipment } from './types'
 
-const api = axios.create({ baseURL: '/api' })
+const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
 
 export const gangsApi = {
   list:   ()                  => api.get<Gang[]>('/gangs.php'),

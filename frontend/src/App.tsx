@@ -7,7 +7,7 @@ import FighterDetail from './pages/FighterDetail'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/necromunda-gang-manager">
       <Layout>
         <Routes>
           <Route path="/"             element={<GangList />} />
