@@ -6,8 +6,8 @@ export default defineConfig({
   base: '/necromunda-gang-manager/',
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8080',
+      '/necromunda-gang-manager/api': {
+        target: 'https://globbin.se',
         changeOrigin: true,
       },
     },
