@@ -34,7 +34,7 @@ export const useStore = create<Store>((set, get) => ({
     set({ loading: true, error: null })
     try {
       const res = await gangsApi.list()
-      set({ gangs: res.data, loading: false })
+      set({ gangs: Array.isArray(res.data) ? res.data : [], loading: false })
     } catch {
       set({ error: 'Failed to load gangs', loading: false })
     }
