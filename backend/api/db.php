@@ -15,6 +15,72 @@ function getDb(): PDO {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]);
+        initTables($pdo);
     }
     return $pdo;
+}
+
+function initTables(PDO $pdo): void {
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS gangs (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            name       VARCHAR(100) NOT NULL,
+            type       VARCHAR(50)  NOT NULL,
+            credits    INT          NOT NULL DEFAULT 1000,
+            reputation INT          NOT NULL DEFAULT 0,
+            created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighters (
+            id                INT AUTO_INCREMENT PRIMARY KEY,
+            gang_id           INT          NOT NULL,
+            name              VARCHAR(100) NOT NULL,
+            type              VARCHAR(50)  NOT NULL,
+            cost              INT          NOT NULL DEFAULT 0,
+            experience        INT          NOT NULL DEFAULT 0,
+            kills             INT          NOT NULL DEFAULT 0,
+            advancement_count INT          NOT NULL DEFAULT 0,
+            in_recovery       TINYINT(1)   NOT NULL DEFAULT 0,
+            dead              TINYINT(1)   NOT NULL DEFAULT 0,
+            m        INT NOT NULL DEFAULT 5,
+            ws       INT NOT NULL DEFAULT 4,
+            bs       INT NOT NULL DEFAULT 4,
+            s        INT NOT NULL DEFAULT 3,
+            t        INT NOT NULL DEFAULT 3,
+            w        INT NOT NULL DEFAULT 1,
+            i        INT NOT NULL DEFAULT 4,
+            a        INT NOT NULL DEFAULT 1,
+            ld       INT NOT NULL DEFAULT 6,
+            cl       INT NOT NULL DEFAULT 7,
+            wil      INT NOT NULL DEFAULT 7,
+            int_stat INT NOT NULL DEFAULT 7,
+            FOREIGN KEY (gang_id) REFERENCES gangs(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighter_skills (
+            id             INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id     INT          NOT NULL,
+            skill_name     VARCHAR(100) NOT NULL,
+            skill_category VARCHAR(100) NOT NULL DEFAULT '',
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighter_injuries (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id  INT          NOT NULL,
+            injury_name VARCHAR(100) NOT NULL,
+            permanent   TINYINT(1)  NOT NULL DEFAULT 0,
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS equipment (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id INT          NOT NULL,
+            name       VARCHAR(100) NOT NULL,
+            type       VARCHAR(20)  NOT NULL DEFAULT 'equipment',
+            cost       INT          NOT NULL DEFAULT 0,
+            traits     JSON,
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    ");
 }
