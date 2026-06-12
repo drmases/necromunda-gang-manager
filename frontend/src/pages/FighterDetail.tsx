@@ -1,0 +1,263 @@
+import { useEffect, useState } from 'react'
+import { useParams, Link } from 'react-router-dom'
+import { useStore } from '../store'
+import StatBlock from '../components/StatBlock'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType } from '../types'
+import { fighterApi } from '../api'
+
+export default function FighterDetail() {
+  const { id } = useParams<{ id: string }>()
+  const fighterId = Number(id)
+  const { currentFighter, loading, error, fetchFighter, updateFighter } = useStore()
+  const [editing, setEditing] = useState(false)
+  const [editState, setEditState] = useState<any>(null)
+
+  // Sub-form states
+  const [skillName, setSkillName]       = useState('')
+  const [skillCat, setSkillCat]         = useState('')
+  const [injuryName, setInjuryName]     = useState('')
+  const [injuryPerm, setInjuryPerm]     = useState(false)
+  const [equipName, setEquipName]       = useState('')
+  const [equipType, setEquipType]       = useState<EquipmentType>('weapon')
+  const [equipCost, setEquipCost]       = useState(0)
+  const [refresh, setRefresh]           = useState(0)
+
+  useEffect(() => { fetchFighter(fighterId) }, [fighterId, fetchFighter, refresh])
+
+  if (loading && !currentFighter) return <div className="text-dark-400 font-mono animate-pulse">Loading fighter…</div>
+  if (error)   return <div className="text-blood-500">{error}</div>
+  if (!currentFighter) return null
+
+  const f = currentFighter
+
+  const startEdit = () => {
+    setEditState({
+      experience: f.experience,
+      kills: f.kills,
+      advancement_count: f.advancement_count,
+      in_recovery: f.in_recovery,
+      dead: f.dead,
+      m: f.m, ws: f.ws, bs: f.bs, s: f.s, t: f.t,
+      w: f.w, i: f.i, a: f.a, ld: f.ld, cl: f.cl, wil: f.wil, int: f.int,
+    })
+    setEditing(true)
+  }
+
+  const saveEdit = async () => {
+    await updateFighter(f.id, editState)
+    setEditing(false)
+  }
+
+  const handleStatChange = (key: keyof FighterStats, val: number) => {
+    setEditState((s: any) => ({ ...s, [key]: val }))
+  }
+
+  const addSkill = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!skillName.trim()) return
+    await fighterApi.addSkill(f.id, { skill_name: skillName.trim(), skill_category: skillCat.trim() })
+    setSkillName(''); setSkillCat('')
+    setRefresh(r => r + 1)
+  }
+
+  const removeSkill = async (skillId: number) => {
+    await fighterApi.deleteSkill(f.id, skillId)
+    setRefresh(r => r + 1)
+  }
+
+  const addInjury = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!injuryName.trim()) return
+    await fighterApi.addInjury(f.id, { injury_name: injuryName.trim(), permanent: injuryPerm })
+    setInjuryName(''); setInjuryPerm(false)
+    setRefresh(r => r + 1)
+  }
+
+  const removeInjury = async (injuryId: number) => {
+    await fighterApi.deleteInjury(f.id, injuryId)
+    setRefresh(r => r + 1)
+  }
+
+  const addEquipment = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!equipName.trim()) return
+    await fighterApi.addEquipment(f.id, { name: equipName.trim(), type: equipType, cost: equipCost, traits: [] })
+    setEquipName(''); setEquipCost(0)
+    setRefresh(r => r + 1)
+  }
+
+  const removeEquipment = async (equipId: number) => {
+    await fighterApi.deleteEquipment(f.id, equipId)
+    setRefresh(r => r + 1)
+  }
+
+  const stats: FighterStats = editing ? editState : {
+    m: f.m, ws: f.ws, bs: f.bs, s: f.s, t: f.t,
+    w: f.w, i: f.i, a: f.a, ld: f.ld, cl: f.cl, wil: f.wil, int: f.int,
+  }
+
+  return (
+    <div className="max-w-3xl">
+      {/* Breadcrumb */}
+      <div className="flex gap-2 text-xs text-dark-400 mb-4">
+        <Link to="/" className="hover:text-gold-500 transition-colors">Gangs</Link>
+        <span>›</span>
+        <Link to={`/gangs/${f.gang_id}`} className="hover:text-gold-500 transition-colors">Gang</Link>
+        <span>›</span>
+        <span className="text-dark-200">{f.name}</span>
+      </div>
+
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">{f.name}</h1>
+          <div className="text-sm text-dark-300 mt-0.5">{f.type}</div>
+          <div className="flex gap-2 mt-2">
+            {f.dead        && <span className="text-xs bg-blood-600 text-dark-100 px-2 py-0.5 rounded font-mono">DEAD</span>}
+            {f.in_recovery && <span className="text-xs bg-dark-600 text-dark-300 px-2 py-0.5 rounded font-mono">IN RECOVERY</span>}
+          </div>
+        </div>
+        <div className="flex gap-2">
+          {editing ? (
+            <>
+              <button onClick={() => setEditing(false)} className="text-sm text-dark-400 hover:text-dark-100 px-3 py-1.5 border border-dark-700 rounded transition-colors">Cancel</button>
+              <button onClick={saveEdit} className="text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-bold px-4 py-1.5 rounded transition-colors">Save</button>
+            </>
+          ) : (
+            <button onClick={startEdit} className="text-sm border border-gold-700 text-gold-500 hover:bg-gold-900/30 px-4 py-1.5 rounded transition-colors">Edit</button>
+          )}
+        </div>
+      </div>
+
+      {/* Quick stats */}
+      <div className="grid grid-cols-4 gap-3 mb-6">
+        {[
+          { label: 'Cost', icon: '💰', key: 'cost' as const },
+          { label: 'XP', icon: '⭐', key: 'experience' as const },
+          { label: 'Kills', icon: '☠', key: 'kills' as const },
+          { label: 'Advancements', icon: '↑', key: 'advancement_count' as const },
+        ].map(({ label, icon, key }) => (
+          <div key={key} className="border border-dark-600 bg-dark-800 rounded p-3">
+            <div className="text-xs text-dark-400">{icon} {label}</div>
+            {editing && key !== 'cost' ? (
+              <input
+                type="number"
+                min={0}
+                value={editState[key]}
+                onChange={e => setEditState((s: any) => ({ ...s, [key]: Number(e.target.value) }))}
+                className="w-full bg-transparent text-gold-400 font-mono text-xl focus:outline-none"
+              />
+            ) : (
+              <div className="font-mono text-xl text-gold-400">{f[key]}</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {editing && (
+        <div className="flex gap-4 mb-4 text-sm">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={editState.in_recovery}
+              onChange={e => setEditState((s: any) => ({ ...s, in_recovery: e.target.checked }))}
+              className="accent-gold-500"
+            />
+            <span className="text-dark-300">In Recovery</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" checked={editState.dead}
+              onChange={e => setEditState((s: any) => ({ ...s, dead: e.target.checked }))}
+              className="accent-blood-500"
+            />
+            <span className="text-dark-300">Dead</span>
+          </label>
+        </div>
+      )}
+
+      {/* Stat block */}
+      <div className="mb-6">
+        <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest mb-2">Stats</h2>
+        <StatBlock stats={stats} editable={editing} onChange={handleStatChange} />
+      </div>
+
+      {/* Skills */}
+      <Section title="Skills">
+        {(f.skills ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.skills ?? []).map((sk: Skill) => (
+              <div key={sk.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span><span className="text-gold-500">{sk.skill_name}</span>{sk.skill_category && <span className="text-dark-400 ml-2 text-xs">({sk.skill_category})</span>}</span>
+                <button onClick={() => removeSkill(sk.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addSkill} className="flex gap-2">
+          <input value={skillName} onChange={e => setSkillName(e.target.value)} placeholder="Skill name" className="input-sm flex-1" />
+          <input value={skillCat} onChange={e => setSkillCat(e.target.value)} placeholder="Category" className="input-sm w-32" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Injuries */}
+      <Section title="Injuries">
+        {(f.injuries ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.injuries ?? []).map((inj: Injury) => (
+              <div key={inj.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className={inj.permanent ? 'text-blood-500' : 'text-dark-200'}>{inj.injury_name}</span>
+                  {inj.permanent && <span className="text-xs text-blood-600 ml-2">permanent</span>}
+                </span>
+                <button onClick={() => removeInjury(inj.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addInjury} className="flex gap-2 items-center">
+          <input value={injuryName} onChange={e => setInjuryName(e.target.value)} placeholder="Injury name" className="input-sm flex-1" />
+          <label className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer whitespace-nowrap">
+            <input type="checkbox" checked={injuryPerm} onChange={e => setInjuryPerm(e.target.checked)} className="accent-blood-500" />
+            Permanent
+          </label>
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Equipment */}
+      <Section title="Equipment">
+        {(f.equipment ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.equipment ?? []).map((eq: Equipment) => (
+              <div key={eq.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-dark-100">{eq.name}</span>
+                  <span className="text-dark-400 text-xs ml-2">[{eq.type}]</span>
+                  {eq.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{eq.cost}</span>}
+                </span>
+                <button onClick={() => removeEquipment(eq.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addEquipment} className="flex gap-2">
+          <input value={equipName} onChange={e => setEquipName(e.target.value)} placeholder="Item name" className="input-sm flex-1" />
+          <select value={equipType} onChange={e => setEquipType(e.target.value as EquipmentType)} className="input-sm w-28">
+            <option value="weapon">Weapon</option>
+            <option value="armour">Armour</option>
+            <option value="equipment">Equipment</option>
+          </select>
+          <input type="number" min={0} value={equipCost} onChange={e => setEquipCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+    </div>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-6">
+      <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest mb-2">{title}</h2>
+      <div className="border border-dark-700 bg-dark-900/50 rounded p-3">{children}</div>
+    </div>
+  )
+}

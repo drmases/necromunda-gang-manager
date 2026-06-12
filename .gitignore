@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.local
+backend/api/db.php.local
+*.log
+.DS_Store
+Thumbs.db
