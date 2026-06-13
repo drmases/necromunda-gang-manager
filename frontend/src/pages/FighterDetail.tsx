@@ -356,24 +356,36 @@ export default function FighterDetail() {
         )}
         {weaponLibrary.length > 0 && (
           <div className="mb-3">
-            <div className="text-xs text-dark-400 mb-1.5">Quick-pick from {gangType} library:</div>
-            <div className="flex flex-wrap gap-1">
-              {weaponLibrary.map(w => (
-                <button
-                  key={w.id}
-                  type="button"
-                  onClick={() => {
-                    setWeaponName(w.name)
-                    setWeaponCost(w.cost)
-                    const notes = `Str ${w.str}, AP ${w.ap}, Dmg ${w.dmg}, Ammo ${w.ammo}${w.traits ? ', ' + w.traits : ''}`
-                    setWeaponNotes(notes)
-                  }}
-                  className="px-2 py-1 text-xs bg-dark-700 border border-dark-600 text-dark-200 hover:border-gold-600 hover:text-gold-400 rounded transition-colors font-mono"
-                >
-                  {w.name} {w.cost > 0 ? `(${w.cost})` : ''}
-                </button>
+            <select
+              value=""
+              onChange={e => {
+                const w = weaponLibrary.find(w => String(w.id) === e.target.value)
+                if (!w) return
+                setWeaponName(w.name)
+                setWeaponCost(w.cost)
+                const notes = [
+                  w.range_s !== '-' ? `Rng ${w.range_s}/${w.range_l}` : '',
+                  w.str !== '-' ? `Str ${w.str}` : '',
+                  w.ap !== '-' ? `AP ${w.ap}` : '',
+                  w.dmg !== '-' ? `Dmg ${w.dmg}` : '',
+                  w.ammo !== '-' ? `Ammo ${w.ammo}` : '',
+                  w.traits || '',
+                ].filter(Boolean).join(', ')
+                setWeaponNotes(notes)
+              }}
+              className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+            >
+              <option value="">— Pick from {gangType} equipment list —</option>
+              {Array.from(new Set(weaponLibrary.map(w => w.category))).map(cat => (
+                <optgroup key={cat} label={cat}>
+                  {weaponLibrary.filter(w => w.category === cat).map(w => (
+                    <option key={w.id} value={w.id}>
+                      {w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
-            </div>
+            </select>
           </div>
         )}
         <form onSubmit={addWeapon} className="flex gap-2">
