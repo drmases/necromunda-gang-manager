@@ -66,6 +66,60 @@ if ($action === 'equipment') {
     }
 }
 
+if ($action === 'weapon') {
+    if ($method === 'POST') {
+        $body = getBody();
+        $stmt = $db->prepare('INSERT INTO fighter_weapons (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
+        $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        $row = $db->prepare('SELECT * FROM fighter_weapons WHERE id = ?');
+        $row->execute([(int)$db->lastInsertId()]);
+        $w = $row->fetch();
+        $w['id'] = (int)$w['id']; $w['cost'] = (int)$w['cost'];
+        jsonResponse($w, 201);
+    }
+    if ($method === 'DELETE') {
+        $weaponId = (int)($_GET['weapon_id'] ?? 0);
+        $db->prepare('DELETE FROM fighter_weapons WHERE id = ? AND fighter_id = ?')->execute([$weaponId, $id]);
+        jsonResponse(['deleted' => true]);
+    }
+}
+
+if ($action === 'wargear') {
+    if ($method === 'POST') {
+        $body = getBody();
+        $stmt = $db->prepare('INSERT INTO fighter_wargear (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
+        $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        $row = $db->prepare('SELECT * FROM fighter_wargear WHERE id = ?');
+        $row->execute([(int)$db->lastInsertId()]);
+        $wg = $row->fetch();
+        $wg['id'] = (int)$wg['id']; $wg['cost'] = (int)$wg['cost'];
+        jsonResponse($wg, 201);
+    }
+    if ($method === 'DELETE') {
+        $wargearId = (int)($_GET['wargear_id'] ?? 0);
+        $db->prepare('DELETE FROM fighter_wargear WHERE id = ? AND fighter_id = ?')->execute([$wargearId, $id]);
+        jsonResponse(['deleted' => true]);
+    }
+}
+
+if ($action === 'special_rule') {
+    if ($method === 'POST') {
+        $body = getBody();
+        $stmt = $db->prepare('INSERT INTO fighter_special_rules (fighter_id, rule_name, description) VALUES (?,?,?)');
+        $stmt->execute([$id, trim($body['rule_name'] ?? ''), trim($body['description'] ?? '')]);
+        $row = $db->prepare('SELECT * FROM fighter_special_rules WHERE id = ?');
+        $row->execute([(int)$db->lastInsertId()]);
+        $sr = $row->fetch();
+        $sr['id'] = (int)$sr['id'];
+        jsonResponse($sr, 201);
+    }
+    if ($method === 'DELETE') {
+        $ruleId = (int)($_GET['rule_id'] ?? 0);
+        $db->prepare('DELETE FROM fighter_special_rules WHERE id = ? AND fighter_id = ?')->execute([$ruleId, $id]);
+        jsonResponse(['deleted' => true]);
+    }
+}
+
 // ── Fighter CRUD ─────────────────────────────────────────────────────────────
 
 if ($method === 'GET') {
@@ -91,6 +145,24 @@ if ($method === 'GET') {
     $eqs = $equip->fetchAll();
     foreach ($eqs as &$e) { $e['traits'] = json_decode($e['traits'] ?? '[]', true); }
     $fighter['equipment'] = $eqs;
+
+    $wpns = $db->prepare('SELECT * FROM fighter_weapons WHERE fighter_id = ?');
+    $wpns->execute([$id]);
+    $ws = $wpns->fetchAll();
+    foreach ($ws as &$w) { $w['id'] = (int)$w['id']; $w['cost'] = (int)$w['cost']; }
+    $fighter['weapons'] = $ws;
+
+    $wgs = $db->prepare('SELECT * FROM fighter_wargear WHERE fighter_id = ?');
+    $wgs->execute([$id]);
+    $wgList = $wgs->fetchAll();
+    foreach ($wgList as &$wg) { $wg['id'] = (int)$wg['id']; $wg['cost'] = (int)$wg['cost']; }
+    $fighter['wargear'] = $wgList;
+
+    $srs = $db->prepare('SELECT * FROM fighter_special_rules WHERE fighter_id = ?');
+    $srs->execute([$id]);
+    $srList = $srs->fetchAll();
+    foreach ($srList as &$sr) { $sr['id'] = (int)$sr['id']; }
+    $fighter['special_rules'] = $srList;
 
     jsonResponse($fighter);
 }
@@ -140,6 +212,24 @@ if ($method === 'PUT') {
     $eqs = $equip->fetchAll();
     foreach ($eqs as &$e) { $e['traits'] = json_decode($e['traits'] ?? '[]', true); }
     $fighter['equipment'] = $eqs;
+
+    $wpns2 = $db->prepare('SELECT * FROM fighter_weapons WHERE fighter_id = ?');
+    $wpns2->execute([$id]);
+    $ws2 = $wpns2->fetchAll();
+    foreach ($ws2 as &$w2) { $w2['id'] = (int)$w2['id']; $w2['cost'] = (int)$w2['cost']; }
+    $fighter['weapons'] = $ws2;
+
+    $wgs2 = $db->prepare('SELECT * FROM fighter_wargear WHERE fighter_id = ?');
+    $wgs2->execute([$id]);
+    $wgList2 = $wgs2->fetchAll();
+    foreach ($wgList2 as &$wg2) { $wg2['id'] = (int)$wg2['id']; $wg2['cost'] = (int)$wg2['cost']; }
+    $fighter['wargear'] = $wgList2;
+
+    $srs2 = $db->prepare('SELECT * FROM fighter_special_rules WHERE fighter_id = ?');
+    $srs2->execute([$id]);
+    $srList2 = $srs2->fetchAll();
+    foreach ($srList2 as &$sr2) { $sr2['id'] = (int)$sr2['id']; }
+    $fighter['special_rules'] = $srList2;
 
     jsonResponse($fighter);
 }

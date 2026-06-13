@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../store'
 import StatBlock from '../components/StatBlock'
-import type { FighterStats, Skill, Injury, Equipment, EquipmentType } from '../types'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Wargear, SpecialRule } from '../types'
 import { fighterApi } from '../api'
 
 export default function FighterDetail() {
@@ -20,6 +20,14 @@ export default function FighterDetail() {
   const [equipName, setEquipName]       = useState('')
   const [equipType, setEquipType]       = useState<EquipmentType>('weapon')
   const [equipCost, setEquipCost]       = useState(0)
+  const [weaponName, setWeaponName]     = useState('')
+  const [weaponCost, setWeaponCost]     = useState(0)
+  const [weaponNotes, setWeaponNotes]   = useState('')
+  const [wargearName, setWargearName]   = useState('')
+  const [wargearCost, setWargearCost]   = useState(0)
+  const [wargearNotes, setWargearNotes] = useState('')
+  const [ruleName, setRuleName]         = useState('')
+  const [ruleDesc, setRuleDesc]         = useState('')
   const [refresh, setRefresh]           = useState(0)
 
   useEffect(() => { fetchFighter(fighterId) }, [fighterId, fetchFighter, refresh])
@@ -88,6 +96,45 @@ export default function FighterDetail() {
 
   const removeEquipment = async (equipId: number) => {
     await fighterApi.deleteEquipment(f.id, equipId)
+    setRefresh(r => r + 1)
+  }
+
+  const addWeapon = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!weaponName.trim()) return
+    await fighterApi.addWeapon(f.id, { name: weaponName.trim(), cost: weaponCost, notes: weaponNotes.trim() })
+    setWeaponName(''); setWeaponCost(0); setWeaponNotes('')
+    setRefresh(r => r + 1)
+  }
+
+  const removeWeapon = async (weaponId: number) => {
+    await fighterApi.deleteWeapon(f.id, weaponId)
+    setRefresh(r => r + 1)
+  }
+
+  const addWargear = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!wargearName.trim()) return
+    await fighterApi.addWargear(f.id, { name: wargearName.trim(), cost: wargearCost, notes: wargearNotes.trim() })
+    setWargearName(''); setWargearCost(0); setWargearNotes('')
+    setRefresh(r => r + 1)
+  }
+
+  const removeWargear = async (wargearId: number) => {
+    await fighterApi.deleteWargear(f.id, wargearId)
+    setRefresh(r => r + 1)
+  }
+
+  const addSpecialRule = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!ruleName.trim()) return
+    await fighterApi.addSpecialRule(f.id, { rule_name: ruleName.trim(), description: ruleDesc.trim() })
+    setRuleName(''); setRuleDesc('')
+    setRefresh(r => r + 1)
+  }
+
+  const removeSpecialRule = async (ruleId: number) => {
+    await fighterApi.deleteSpecialRule(f.id, ruleId)
     setRefresh(r => r + 1)
   }
 
@@ -246,6 +293,76 @@ export default function FighterDetail() {
             <option value="equipment">Equipment</option>
           </select>
           <input type="number" min={0} value={equipCost} onChange={e => setEquipCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Weapons */}
+      <Section title="Weapons">
+        {(f.weapons ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.weapons ?? []).map((wp: Weapon) => (
+              <div key={wp.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-dark-100">{wp.name}</span>
+                  {wp.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wp.cost}</span>}
+                  {wp.notes && <span className="text-dark-400 text-xs ml-2">{wp.notes}</span>}
+                </span>
+                <button onClick={() => removeWeapon(wp.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addWeapon} className="flex gap-2">
+          <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
+          <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input value={weaponNotes} onChange={e => setWeaponNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Wargear */}
+      <Section title="Wargear">
+        {(f.wargear ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.wargear ?? []).map((wg: Wargear) => (
+              <div key={wg.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-dark-100">{wg.name}</span>
+                  {wg.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wg.cost}</span>}
+                  {wg.notes && <span className="text-dark-400 text-xs ml-2">{wg.notes}</span>}
+                </span>
+                <button onClick={() => removeWargear(wg.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addWargear} className="flex gap-2">
+          <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
+          <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input value={wargearNotes} onChange={e => setWargearNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Special Rules */}
+      <Section title="Special Rules">
+        {(f.special_rules ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.special_rules ?? []).map((sr: SpecialRule) => (
+              <div key={sr.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-gold-500">{sr.rule_name}</span>
+                  {sr.description && <span className="text-dark-400 ml-2 text-xs">{sr.description}</span>}
+                </span>
+                <button onClick={() => removeSpecialRule(sr.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addSpecialRule} className="flex gap-2">
+          <input value={ruleName} onChange={e => setRuleName(e.target.value)} placeholder="Rule name" className="input-sm flex-1" />
+          <input value={ruleDesc} onChange={e => setRuleDesc(e.target.value)} placeholder="Description" className="input-sm flex-1" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>

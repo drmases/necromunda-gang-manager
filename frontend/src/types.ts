@@ -47,6 +47,29 @@ export interface Equipment {
   traits: string[]
 }
 
+export interface Weapon {
+  id: number
+  fighter_id: number
+  name: string
+  cost: number
+  notes: string
+}
+
+export interface Wargear {
+  id: number
+  fighter_id: number
+  name: string
+  cost: number
+  notes: string
+}
+
+export interface SpecialRule {
+  id: number
+  fighter_id: number
+  rule_name: string
+  description: string
+}
+
 export interface Fighter extends FighterStats {
   id: number
   gang_id: number
@@ -61,6 +84,9 @@ export interface Fighter extends FighterStats {
   skills?: Skill[]
   injuries?: Injury[]
   equipment?: Equipment[]
+  weapons?: Weapon[]
+  wargear?: Wargear[]
+  special_rules?: SpecialRule[]
 }
 
 export interface Gang {

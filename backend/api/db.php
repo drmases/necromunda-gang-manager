@@ -83,6 +83,32 @@ function initTables(PDO $pdo): void {
             FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+        CREATE TABLE IF NOT EXISTS fighter_weapons (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id INT          NOT NULL,
+            name       VARCHAR(100) NOT NULL,
+            cost       INT          NOT NULL DEFAULT 0,
+            notes      VARCHAR(255) NOT NULL DEFAULT '',
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighter_wargear (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id INT          NOT NULL,
+            name       VARCHAR(100) NOT NULL,
+            cost       INT          NOT NULL DEFAULT 0,
+            notes      VARCHAR(255) NOT NULL DEFAULT '',
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighter_special_rules (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            fighter_id  INT          NOT NULL,
+            rule_name   VARCHAR(100) NOT NULL,
+            description VARCHAR(255) NOT NULL DEFAULT '',
+            FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
         CREATE TABLE IF NOT EXISTS fighter_templates (
             id         INT AUTO_INCREMENT PRIMARY KEY,
             gang_type  VARCHAR(50)  NOT NULL,
