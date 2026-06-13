@@ -30,11 +30,11 @@ if ($method === 'POST') {
     $data = validateWeapon($body);
     $stmt = $db->prepare('
         INSERT INTO weapon_library
-            (gang_type, name, cost, range_s, range_l, hit_s, hit_l, str, ap, dmg, ammo, traits, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (gang_type, category, name, cost, range_s, range_l, hit_s, hit_l, str, ap, dmg, ammo, traits, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ');
     $stmt->execute([
-        $data['gang_type'], $data['name'], $data['cost'],
+        $data['gang_type'], $data['category'], $data['name'], $data['cost'],
         $data['range_s'], $data['range_l'], $data['hit_s'], $data['hit_l'],
         $data['str'], $data['ap'], $data['dmg'], $data['ammo'],
         $data['traits'], $data['sort_order'],
@@ -50,13 +50,13 @@ if ($method === 'PUT') {
     $data = validateWeapon($body);
     $stmt = $db->prepare('
         UPDATE weapon_library SET
-            gang_type=?, name=?, cost=?,
+            gang_type=?, category=?, name=?, cost=?,
             range_s=?, range_l=?, hit_s=?, hit_l=?,
             str=?, ap=?, dmg=?, ammo=?, traits=?, sort_order=?
         WHERE id=?
     ');
     $stmt->execute([
-        $data['gang_type'], $data['name'], $data['cost'],
+        $data['gang_type'], $data['category'], $data['name'], $data['cost'],
         $data['range_s'], $data['range_l'], $data['hit_s'], $data['hit_l'],
         $data['str'], $data['ap'], $data['dmg'], $data['ammo'],
         $data['traits'], $data['sort_order'], $id,
@@ -82,6 +82,7 @@ function validateWeapon(array $body): array {
     if ($name === '')     jsonError('name is required');
     return [
         'gang_type'  => $gangType,
+        'category'   => trim($body['category']    ?? ''),
         'name'       => $name,
         'cost'       => (int)($body['cost']       ?? 0),
         'range_s'    => trim($body['range_s']     ?? '-'),

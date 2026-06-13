@@ -81,6 +81,7 @@ export interface SpecialRule {
 export interface WeaponLibraryEntry {
   id: number
   gang_type: string
+  category: string
   name: string
   cost: number
   range_s: string

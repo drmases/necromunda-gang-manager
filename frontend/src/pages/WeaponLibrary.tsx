@@ -13,7 +13,7 @@ const PROFILE_LABELS = ['Rng S','Rng L','Hit S','Hit L','Str','AP','Dmg','Ammo']
 type ProfileKey = typeof PROFILE_KEYS[number]
 
 const EMPTY: Omit<WeaponLibraryEntry, 'id'> = {
-  gang_type: 'Genestealer Cult', name: '', cost: 0,
+  gang_type: 'Genestealer Cult', category: '', name: '', cost: 0,
   range_s: '-', range_l: '-', hit_s: '-', hit_l: '-',
   str: '-', ap: '-', dmg: '1', ammo: '-',
   traits: '', sort_order: 0,
@@ -40,6 +40,14 @@ export default function WeaponLibrary() {
   }
 
   const filtered = weapons.filter(w => w.gang_type === filterGang)
+
+  // Group by category
+  const grouped = filtered.reduce<Record<string, WeaponLibraryEntry[]>>((acc, w) => {
+    const cat = w.category || 'Other'
+    if (!acc[cat]) acc[cat] = []
+    acc[cat].push(w)
+    return acc
+  }, {})
 
   function startCreate() {
     setForm({ ...EMPTY, gang_type: filterGang })
@@ -83,12 +91,12 @@ export default function WeaponLibrary() {
   }
 
   async function remove(id: number) {
-    if (!confirm('Delete this weapon?')) return
+    if (!confirm('Delete this item?')) return
     try {
       await weaponLibraryApi.delete(id)
       setWeapons(ws => ws.filter(w => w.id !== id))
     } catch {
-      setError('Failed to delete weapon')
+      setError('Failed to delete item')
     }
   }
 
@@ -100,12 +108,12 @@ export default function WeaponLibrary() {
           onClick={startCreate}
           className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold text-sm rounded transition-colors"
         >
-          + New Weapon
+          + New Item
         </button>
       </div>
 
       <div className="mb-6">
-        <label className="text-xs text-dark-300 block mb-1">Filter by Faction</label>
+        <label className="text-xs text-dark-300 block mb-1">Faction</label>
         <select
           value={filterGang}
           onChange={e => setFilterGang(e.target.value)}
@@ -120,11 +128,10 @@ export default function WeaponLibrary() {
       {(creating || editing) && (
         <div className="border border-gold-800 bg-dark-800 rounded p-4 mb-6 space-y-4">
           <h3 className="font-display text-gold-500 text-sm tracking-wider uppercase">
-            {editing ? 'Edit Weapon' : 'New Weapon'}
+            {editing ? 'Edit Item' : 'New Item'}
           </h3>
 
-          {/* Row 1: Faction, Name, Cost, Sort Order */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div>
               <label className="text-xs text-dark-300 block mb-1">Faction</label>
               <select
@@ -134,6 +141,15 @@ export default function WeaponLibrary() {
               >
                 {GANG_TYPES.map(g => <option key={g} value={g}>{g}</option>)}
               </select>
+            </div>
+            <div>
+              <label className="text-xs text-dark-300 block mb-1">Category</label>
+              <input
+                value={form.category}
+                onChange={e => setField('category', e.target.value)}
+                placeholder="e.g. Basic Weapon"
+                className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+              />
             </div>
             <div>
               <label className="text-xs text-dark-300 block mb-1">Name</label>
@@ -153,18 +169,8 @@ export default function WeaponLibrary() {
                 className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
               />
             </div>
-            <div>
-              <label className="text-xs text-dark-300 block mb-1">Sort Order</label>
-              <input
-                type="number" min={0}
-                value={form.sort_order}
-                onChange={e => setField('sort_order', Number(e.target.value))}
-                className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
-              />
-            </div>
           </div>
 
-          {/* Row 2: Profile stats */}
           <div>
             <div className="text-xs text-dark-400 mb-1">Profile</div>
             <div className="grid grid-cols-8 gap-1">
@@ -183,7 +189,6 @@ export default function WeaponLibrary() {
             </div>
           </div>
 
-          {/* Traits */}
           <div>
             <label className="text-xs text-dark-300 block mb-1">Traits</label>
             <input
@@ -203,7 +208,7 @@ export default function WeaponLibrary() {
               disabled={saving || !form.name.trim()}
               className="px-4 py-1.5 text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold rounded transition-colors disabled:opacity-50"
             >
-              {saving ? 'Saving…' : 'Save Weapon'}
+              {saving ? 'Saving…' : 'Save'}
             </button>
           </div>
         </div>
@@ -211,45 +216,40 @@ export default function WeaponLibrary() {
 
       {filtered.length === 0 ? (
         <div className="text-dark-400 text-sm text-center py-16 border border-dark-700 rounded">
-          No weapons for {filterGang} yet. Click "+ New Weapon" to add one.
+          No items for {filterGang} yet. Click "+ New Item" to add one.
         </div>
       ) : (
-        <div className="space-y-2">
-          {filtered.map(w => (
-            <div key={w.id} className="border border-dark-600 bg-dark-800 rounded p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div>
-                  <span className="font-display text-gold-400">{w.name}</span>
-                  <span className="ml-3 text-xs font-mono text-dark-300">💰 {w.cost} credits</span>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => startEdit(w)}
-                    className="text-xs text-gold-600 hover:text-gold-400 transition-colors"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => remove(w.id)}
-                    className="text-xs text-red-600 hover:text-red-400 transition-colors"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-              <div className="grid grid-cols-8 gap-1">
-                {PROFILE_LABELS.map(l => (
-                  <div key={l} className="text-center text-xs text-gold-700 font-display">{l}</div>
+        <div className="space-y-6">
+          {Object.entries(grouped).map(([category, items]) => (
+            <div key={category}>
+              <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest mb-2">{category}</h2>
+              <div className="space-y-1">
+                {items.map(w => (
+                  <div key={w.id} className="border border-dark-600 bg-dark-800 rounded p-3">
+                    <div className="flex items-start justify-between mb-1">
+                      <div>
+                        <span className="font-display text-gold-400 text-sm">{w.name}</span>
+                        <span className="ml-3 text-xs font-mono text-dark-300">💰 {w.cost}</span>
+                      </div>
+                      <div className="flex gap-3">
+                        <button onClick={() => startEdit(w)} className="text-xs text-gold-600 hover:text-gold-400 transition-colors">Edit</button>
+                        <button onClick={() => remove(w.id)} className="text-xs text-red-600 hover:text-red-400 transition-colors">Delete</button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-8 gap-1">
+                      {PROFILE_LABELS.map(l => (
+                        <div key={l} className="text-center text-xs text-gold-700 font-display">{l}</div>
+                      ))}
+                      {PROFILE_KEYS.map(key => (
+                        <div key={key} className="text-center text-xs font-mono text-dark-200">{w[key as ProfileKey]}</div>
+                      ))}
+                    </div>
+                    {w.traits && (
+                      <div className="mt-1 text-xs text-dark-400"><span className="text-dark-500">Traits: </span>{w.traits}</div>
+                    )}
+                  </div>
                 ))}
-                {PROFILE_KEYS.map(key => (
-                  <div key={key} className="text-center text-xs font-mono text-dark-200">{w[key as ProfileKey]}</div>
-                ))}
               </div>
-              {w.traits && (
-                <div className="mt-1 text-xs text-dark-400">
-                  <span className="text-dark-500">Traits: </span>{w.traits}
-                </div>
-              )}
             </div>
           ))}
         </div>
