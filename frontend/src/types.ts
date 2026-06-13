@@ -87,6 +87,14 @@ export interface SkillLibraryEntry {
   sort_order: number
 }
 
+export interface InjuryLibraryEntry {
+  id: number
+  name: string
+  category: string
+  description: string
+  sort_order: number
+}
+
 export interface WeaponLibraryEntry {
   id: number
   gang_type: string

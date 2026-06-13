@@ -34,6 +34,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               Equipment
             </Link>
+            <Link
+              to="/skills"
+              className={`hover:text-gold-400 transition-colors ${location.pathname === '/skills' ? 'text-gold-500' : 'text-dark-300'}`}
+            >
+              Skills
+            </Link>
+            <Link
+              to="/injuries"
+              className={`hover:text-gold-400 transition-colors ${location.pathname === '/injuries' ? 'text-gold-500' : 'text-dark-300'}`}
+            >
+              Injuries
+            </Link>
           </nav>
         </div>
       </header>

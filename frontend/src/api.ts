@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry } from './types'
+import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry, InjuryLibraryEntry } from './types'
 
 const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
 
@@ -53,6 +53,13 @@ export const skillLibraryApi = {
   create: (data: Omit<SkillLibraryEntry, 'id'>) => api.post<SkillLibraryEntry>('/skill_library.php', data),
   update: (id: number, data: Omit<SkillLibraryEntry, 'id'>) => api.put<SkillLibraryEntry>(`/skill_library.php?id=${id}`, data),
   delete: (id: number) => api.delete(`/skill_library.php?id=${id}`),
+}
+
+export const injuryLibraryApi = {
+  list: () => api.get<InjuryLibraryEntry[]>('/injury_library.php'),
+  create: (data: Omit<InjuryLibraryEntry, 'id'>) => api.post<InjuryLibraryEntry>('/injury_library.php', data),
+  update: (id: number, data: Omit<InjuryLibraryEntry, 'id'>) => api.put<InjuryLibraryEntry>(`/injury_library.php?id=${id}`, data),
+  delete: (id: number) => api.delete(`/injury_library.php?id=${id}`),
 }
 
 export const fighterApi = {

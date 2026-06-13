@@ -144,6 +144,14 @@ function initTables(PDO $pdo): void {
             sort_order INT          NOT NULL DEFAULT 0
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+        CREATE TABLE IF NOT EXISTS injury_library (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            name        VARCHAR(100) NOT NULL,
+            category    VARCHAR(50)  NOT NULL DEFAULT '',
+            description VARCHAR(255) NOT NULL DEFAULT '',
+            sort_order  INT          NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
         CREATE TABLE IF NOT EXISTS fighter_templates (
             id         INT AUTO_INCREMENT PRIMARY KEY,
             gang_type  VARCHAR(50)  NOT NULL,
