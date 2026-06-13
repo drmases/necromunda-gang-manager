@@ -40,7 +40,7 @@ export default function StatBlock({ stats, editable, onChange, redStats = [] }: 
                     />
                   ) : (
                     <span className={isRed ? 'text-red-500 font-bold' : 'text-dark-100'}>
-                      {stats[key]}{['m','ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}
+                      {stats[key]}{key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}
                     </span>
                   )}
                 </td>
