@@ -23,6 +23,8 @@ const EMPTY: Omit<WeaponLibraryEntry, 'id'> = {
 export default function WeaponLibrary() {
   const [weapons, setWeapons] = useState<WeaponLibraryEntry[]>([])
   const [filterGang, setFilterGang] = useState<string>('Universal')
+  const [filterCategory, setFilterCategory] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
   const [editing, setEditing] = useState<WeaponLibraryEntry | null>(null)
   const [creating, setCreating] = useState(false)
   const [form, setForm] = useState<Omit<WeaponLibraryEntry, 'id'>>(EMPTY)
@@ -46,9 +48,15 @@ export default function WeaponLibrary() {
     }
   }
 
-  const filtered = filterGang === '__unassigned__'
+  const categories = Array.from(new Set(weapons.map(w => w.category).filter(Boolean))).sort()
+
+  const filtered = (filterGang === '__unassigned__'
     ? weapons.filter(w => !w.factions || w.factions === '')
     : weapons
+  ).filter(w =>
+    (!filterCategory || w.category === filterCategory) &&
+    (!search || w.name.toLowerCase().includes(search.toLowerCase()))
+  )
 
   // Group by category
   const grouped = filtered.reduce<Record<string, WeaponLibraryEntry[]>>((acc, w) => {
@@ -113,7 +121,7 @@ export default function WeaponLibrary() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">Weapon Library</h1>
+        <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">Equipment Library</h1>
         <button
           onClick={startCreate}
           className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold text-sm rounded transition-colors"
@@ -122,16 +130,38 @@ export default function WeaponLibrary() {
         </button>
       </div>
 
-      <div className="mb-6">
-        <label className="text-xs text-dark-300 block mb-1">Faction</label>
-        <select
-          value={filterGang}
-          onChange={e => setFilterGang(e.target.value)}
-          className="bg-dark-800 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
-        >
-          {GANG_TYPES.map(g => <option key={g} value={g}>{g}</option>)}
-          <option value="__unassigned__">Unassigned</option>
-        </select>
+      <div className="flex flex-wrap gap-3 mb-6">
+        <div>
+          <label className="text-xs text-dark-300 block mb-1">Faction</label>
+          <select
+            value={filterGang}
+            onChange={e => { setFilterGang(e.target.value); setFilterCategory('') }}
+            className="bg-dark-800 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+          >
+            {GANG_TYPES.map(g => <option key={g} value={g}>{g}</option>)}
+            <option value="__unassigned__">Unassigned</option>
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-dark-300 block mb-1">Type</label>
+          <select
+            value={filterCategory}
+            onChange={e => setFilterCategory(e.target.value)}
+            className="bg-dark-800 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+          >
+            <option value="">All types</option>
+            {categories.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="text-xs text-dark-300 block mb-1">Search</label>
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search by name…"
+            className="bg-dark-800 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600 w-48"
+          />
+        </div>
       </div>
 
       {error && <div className="text-red-400 text-sm mb-4">{error}</div>}

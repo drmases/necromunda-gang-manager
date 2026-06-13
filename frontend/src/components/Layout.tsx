@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               to="/weapons"
               className={`hover:text-gold-400 transition-colors ${location.pathname === '/weapons' ? 'text-gold-500' : 'text-dark-300'}`}
             >
-              Weapons
+              Equipment
             </Link>
           </nav>
         </div>
