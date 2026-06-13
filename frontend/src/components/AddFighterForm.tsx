@@ -111,9 +111,10 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div>
         <div className="text-xs text-dark-400 mb-1">Stats</div>
-        <div className="grid grid-cols-12 gap-1 min-w-max">
+        <div className="overflow-x-auto">
+        <div className="grid grid-cols-12 gap-1" style={{minWidth: '480px'}}>
           {STAT_LABELS.map(l => (
             <div key={l} className="text-center text-xs text-gold-600 font-display">{l}</div>
           ))}
@@ -128,6 +129,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
               className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-1 py-1 text-xs text-center focus:outline-none focus:border-gold-600 font-mono"
             />
           ))}
+        </div>
         </div>
       </div>
 
