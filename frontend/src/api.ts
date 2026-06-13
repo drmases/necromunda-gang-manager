@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry } from './types'
+import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry } from './types'
 
 const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
 
@@ -40,6 +40,19 @@ export const weaponLibraryApi = {
   create: (data: Partial<WeaponLibraryEntry>) => api.post<WeaponLibraryEntry>('/weapon_library.php', data),
   update: (id: number, data: Partial<WeaponLibraryEntry>) => api.put<WeaponLibraryEntry>(`/weapon_library.php?id=${id}`, data),
   delete: (id: number) => api.delete(`/weapon_library.php?id=${id}`),
+}
+
+export const skillLibraryApi = {
+  list: (params?: { faction?: string; role?: string }) => {
+    const p = new URLSearchParams()
+    if (params?.faction) p.set('faction', params.faction)
+    if (params?.role) p.set('role', params.role)
+    const qs = p.toString() ? '?' + p.toString() : ''
+    return api.get<SkillLibraryEntry[]>('/skill_library.php' + qs)
+  },
+  create: (data: Omit<SkillLibraryEntry, 'id'>) => api.post<SkillLibraryEntry>('/skill_library.php', data),
+  update: (id: number, data: Omit<SkillLibraryEntry, 'id'>) => api.put<SkillLibraryEntry>(`/skill_library.php?id=${id}`, data),
+  delete: (id: number) => api.delete(`/skill_library.php?id=${id}`),
 }
 
 export const fighterApi = {

@@ -135,6 +135,15 @@ function initTables(PDO $pdo): void {
             sort_order INT         NOT NULL DEFAULT 0
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+        CREATE TABLE IF NOT EXISTS skill_library (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            name       VARCHAR(100) NOT NULL,
+            category   VARCHAR(50)  NOT NULL DEFAULT '',
+            factions   TEXT         NOT NULL DEFAULT '',
+            roles      TEXT         NOT NULL DEFAULT '',
+            sort_order INT          NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
         CREATE TABLE IF NOT EXISTS fighter_templates (
             id         INT AUTO_INCREMENT PRIMARY KEY,
             gang_type  VARCHAR(50)  NOT NULL,

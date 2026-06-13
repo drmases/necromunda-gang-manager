@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../store'
 import StatBlock from '../components/StatBlock'
-import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry } from '../types'
-import { fighterApi, gangApi, weaponLibraryApi } from '../api'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry } from '../types'
+import { fighterApi, gangApi, weaponLibraryApi, skillLibraryApi } from '../api'
 
 export default function FighterDetail() {
   const { id } = useParams<{ id: string }>()
@@ -36,6 +36,7 @@ export default function FighterDetail() {
   const [refresh, setRefresh]           = useState(0)
   const [gangType, setGangType]         = useState<string | null>(null)
   const [weaponLibrary, setWeaponLibrary] = useState<WeaponLibraryEntry[]>([])
+  const [skillLibrary, setSkillLibrary] = useState<SkillLibraryEntry[]>([])
 
   const WEAPON_CATS = ['Pistol','Basic Weapon','Close Combat Weapon','Heavy Weapon','Power/Shock Weapon','Special Weapon','Two-Handed Weapon']
   const ARMOUR_CATS = ['Armour']
@@ -62,6 +63,7 @@ export default function FighterDetail() {
       const gt = res.data.type
       setGangType(gt)
       weaponLibraryApi.list({ faction: gt }).then(r => setWeaponLibrary(Array.isArray(r.data) ? r.data : []))
+      skillLibraryApi.list({ faction: gt, role: currentFighter.type }).then(r => setSkillLibrary(Array.isArray(r.data) ? r.data : []))
     }).catch(() => {})
   }, [currentFighter?.gang_id])
 
@@ -546,8 +548,32 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addSkill} className="flex gap-2">
-          <input value={skillName} onChange={e => setSkillName(e.target.value)} placeholder="Skill name" className="input-sm flex-1" />
-          <input value={skillCat} onChange={e => setSkillCat(e.target.value)} placeholder="Category" className="input-sm w-32" />
+          {skillLibrary.length > 0 ? (
+            <select
+              value=""
+              onChange={e => {
+                const s = skillLibrary.find(s => String(s.id) === e.target.value)
+                if (!s) return
+                setSkillName(s.name)
+                setSkillCat(s.category)
+              }}
+              className="input-sm flex-1"
+            >
+              <option value="">{skillName || '— Select skill —'}</option>
+              {Array.from(new Set(skillLibrary.map(s => s.category))).map(cat => (
+                <optgroup key={cat} label={cat}>
+                  {skillLibrary.filter(s => s.category === cat).map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          ) : (
+            <>
+              <input value={skillName} onChange={e => setSkillName(e.target.value)} placeholder="Skill name" className="input-sm flex-1" />
+              <input value={skillCat} onChange={e => setSkillCat(e.target.value)} placeholder="Category" className="input-sm w-32" />
+            </>
+          )}
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>

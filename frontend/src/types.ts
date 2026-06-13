@@ -78,6 +78,15 @@ export interface SpecialRule {
   description: string
 }
 
+export interface SkillLibraryEntry {
+  id: number
+  name: string
+  category: string
+  factions: string
+  roles: string
+  sort_order: number
+}
+
 export interface WeaponLibraryEntry {
   id: number
   gang_type: string
