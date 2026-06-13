@@ -36,7 +36,7 @@ export default function StatBlock({ stats, editable, onChange }: Props) {
                     className="w-10 bg-transparent text-center text-dark-100 focus:outline-none focus:text-gold-400"
                   />
                 ) : (
-                  <span className="text-dark-100">{stats[key]}{['ld','cl','wil','int'].includes(STAT_KEYS[i]) ? '+' : ''}</span>
+                  <span className="text-dark-100">{stats[key]}{['m','ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}</span>
                 )}
               </td>
             ))}

@@ -238,7 +238,7 @@ export default function FighterTemplates() {
                   <div key={l} className="text-center text-xs text-gold-700 font-display">{l}</div>
                 ))}
                 {STAT_KEYS.map(key => (
-                  <div key={key} className="text-center text-xs font-mono text-dark-200">{t[key as StatKey]}</div>
+                  <div key={key} className="text-center text-xs font-mono text-dark-200">{t[key as StatKey]}{['m','ws','bs','i','ld','cl','wil','int_stat'].includes(key) ? '+' : ''}</div>
                 ))}
               </div>
             </div>
