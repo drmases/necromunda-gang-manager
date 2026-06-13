@@ -29,11 +29,17 @@ export default function WeaponLibrary() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load(filterGang) }, [filterGang])
 
-  async function load() {
+  async function load(gang: string) {
+    setError(null)
     try {
-      const res = await weaponLibraryApi.list()
+      let res
+      if (gang === '__unassigned__' || gang === 'Universal') {
+        res = await weaponLibraryApi.list()
+      } else {
+        res = await weaponLibraryApi.list({ faction: gang })
+      }
       setWeapons(Array.isArray(res.data) ? res.data : [])
     } catch {
       setError('Failed to load weapon library')
@@ -42,9 +48,7 @@ export default function WeaponLibrary() {
 
   const filtered = filterGang === '__unassigned__'
     ? weapons.filter(w => !w.factions || w.factions === '')
-    : filterGang === 'Universal'
-    ? weapons.filter(w => w.gang_type === 'Universal')
-    : weapons.filter(w => (w.factions || '').split(',').map(f => f.trim()).includes(filterGang))
+    : weapons
 
   // Group by category
   const grouped = filtered.reduce<Record<string, WeaponLibraryEntry[]>>((acc, w) => {
@@ -88,6 +92,7 @@ export default function WeaponLibrary() {
         setWeapons(ws => [...ws, res.data])
       }
       cancel()
+      load(filterGang)
     } catch {
       setError('Failed to save weapon')
     } finally {
@@ -99,7 +104,7 @@ export default function WeaponLibrary() {
     if (!confirm('Delete this item?')) return
     try {
       await weaponLibraryApi.delete(id)
-      setWeapons(ws => ws.filter(w => w.id !== id))
+      load(filterGang)
     } catch {
       setError('Failed to delete item')
     }
