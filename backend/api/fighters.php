@@ -49,6 +49,18 @@ if ($method === 'POST') {
         (int)($body['int']               ?? 7),
     ]);
     $newId = (int)$db->lastInsertId();
+
+    // Auto-insert special rules from template if provided
+    $specialRules = $body['special_rules'] ?? [];
+    if (is_array($specialRules) && count($specialRules) > 0) {
+        $ruleStmt = $db->prepare('INSERT INTO fighter_special_rules (fighter_id, rule_name, description) VALUES (?, ?, ?)');
+        foreach ($specialRules as $rule) {
+            $ruleName = trim($rule['name'] ?? '');
+            $ruleDesc = trim($rule['description'] ?? '');
+            if ($ruleName !== '') $ruleStmt->execute([$newId, $ruleName, $ruleDesc]);
+        }
+    }
+
     $row = $db->prepare('SELECT * FROM fighters WHERE id = ?');
     $row->execute([$newId]);
     $fighter = $row->fetch();

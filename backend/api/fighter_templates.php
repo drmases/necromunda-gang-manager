@@ -33,15 +33,15 @@ if ($method === 'POST') {
     $data = validateTemplate($body);
     $stmt = $db->prepare('
         INSERT INTO fighter_templates
-            (gang_type, name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat, sort_order, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (gang_type, name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat, sort_order, notes, special_rules)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ');
     $stmt->execute([
         $data['gang_type'], $data['name'], $data['cost'],
         $data['m'], $data['ws'], $data['bs'], $data['s'], $data['t'],
         $data['w'], $data['i'], $data['a'],
         $data['ld'], $data['cl'], $data['wil'], $data['int_stat'],
-        $data['sort_order'], $data['notes'],
+        $data['sort_order'], $data['notes'], $data['special_rules'],
     ]);
     $newId = (int)$db->lastInsertId();
     $row = $db->query("SELECT * FROM fighter_templates WHERE id = $newId")->fetch();
@@ -56,7 +56,7 @@ if ($method === 'PUT') {
         UPDATE fighter_templates SET
             gang_type=?, name=?, cost=?,
             m=?, ws=?, bs=?, s=?, t=?, w=?, i=?, a=?,
-            ld=?, cl=?, wil=?, int_stat=?, sort_order=?, notes=?
+            ld=?, cl=?, wil=?, int_stat=?, sort_order=?, notes=?, special_rules=?
         WHERE id=?
     ');
     $stmt->execute([
@@ -64,7 +64,7 @@ if ($method === 'PUT') {
         $data['m'], $data['ws'], $data['bs'], $data['s'], $data['t'],
         $data['w'], $data['i'], $data['a'],
         $data['ld'], $data['cl'], $data['wil'], $data['int_stat'],
-        $data['sort_order'], $data['notes'], $id,
+        $data['sort_order'], $data['notes'], $data['special_rules'], $id,
     ]);
     $row = $db->query("SELECT * FROM fighter_templates WHERE id = $id")->fetch();
     if (!$row) jsonError('Not found', 404);
@@ -101,8 +101,9 @@ function validateTemplate(array $body): array {
         'cl'         => (int)($body['cl']          ?? 7),
         'wil'        => (int)($body['wil']         ?? 7),
         'int_stat'   => (int)($body['int_stat']    ?? 7),
-        'sort_order' => (int)($body['sort_order']  ?? 0),
-        'notes'      => trim($body['notes']        ?? ''),
+        'sort_order'    => (int)($body['sort_order']  ?? 0),
+        'notes'         => trim($body['notes']        ?? ''),
+        'special_rules' => trim($body['special_rules'] ?? ''),
     ];
 }
 
@@ -110,5 +111,6 @@ function decodeTemplate(array $row): array {
     foreach (['id','cost','m','ws','bs','s','t','w','i','a','ld','cl','wil','int_stat','sort_order'] as $k) {
         if (isset($row[$k])) $row[$k] = (int)$row[$k];
     }
+    if (!isset($row['special_rules'])) $row['special_rules'] = '';
     return $row;
 }

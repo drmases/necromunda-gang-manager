@@ -19,6 +19,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
   const [cost, setCost] = useState(50)
   const [stats, setStats] = useState<FighterStats>(DEFAULT_STATS['Ganger'])
   const [saving, setSaving] = useState(false)
+  const [templateSpecialRules, setTemplateSpecialRules] = useState<{name:string,description:string}[]>([])
 
   useEffect(() => {
     fighterTemplatesApi.list(gangType).then(res => {
@@ -29,6 +30,9 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
   function applyTemplate(t: FighterTemplate) {
     setFighterRole(t.name)
     setCost(Number(t.cost))
+    try {
+      setTemplateSpecialRules(t.special_rules ? JSON.parse(t.special_rules) : [])
+    } catch { setTemplateSpecialRules([]) }
     setStats({
       m:   Number(t.m),
       ws:  Number(t.ws),
@@ -54,7 +58,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
     if (!name.trim()) return
     setSaving(true)
     try {
-      await onSubmit({ name: name.trim(), type: fighterRole || 'Ganger', cost, ...stats })
+      await onSubmit({ name: name.trim(), type: fighterRole || 'Ganger', cost, ...stats, special_rules: templateSpecialRules })
     } finally {
       setSaving(false)
     }

@@ -17,6 +17,7 @@ export interface FighterTemplate {
   w: number; i: number; a: number; ld: number; cl: number; wil: number; int_stat: number
   sort_order: number
   notes: string
+  special_rules: string
 }
 
 export interface FighterStats {
