@@ -8,8 +8,8 @@ $db = getDb();
 
 // [name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat, sort_order]
 $templates = [
-    ['Cult Adept (Leader)',       110, 5, 4, 3, 3, 3, 2, 4, 1, 7, 6, 8, 7, 10],
-    ['Cult Alpha (Leader)',       115, 5, 3, 4, 3, 3, 2, 4, 2, 7, 6, 8, 7, 20],
+    ['Cult Adept (Leader)',       120, 5, 4, 4, 3, 3, 2, 3, 1, 3, 5, 5, 4, 10],
+    ['Cult Alpha (Leader)',       145, 5, 3, 3, 3, 3, 2, 3, 2, 3, 5, 5, 4, 20],
     ['Hybrid Acolyte (Champion)',  85, 5, 3, 4, 3, 3, 1, 4, 2, 8, 7, 8, 8, 30],
     ['Aberrant (Ganger)',          75, 4, 3, 6, 5, 4, 2, 4, 2, 8, 6, 6, 9, 40],
     ['Neophyte Hybrid (Ganger)',   35, 5, 4, 4, 3, 3, 1, 4, 1, 8, 7, 8, 8, 50],
