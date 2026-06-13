@@ -1,34 +1,38 @@
 <?php
-// Fix GSC fighter template stats with correct values from the rulebook.
+// Upsert all 5 GSC fighter templates with correct stats from the rulebook.
 // Safe to run multiple times. Delete from server after running.
 require_once __DIR__ . '/cors.php';
 require_once __DIR__ . '/db.php';
 
 $db = getDb();
 
-// [name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat]
-// Stats with "+" are stored as the number only (e.g. WS4+ → 4)
-$updates = [
-    ['Cult Adept (Leader)',       120, 5, 4, 4, 3, 3, 2, 3, 1, 3, 5, 5, 4],
-    ['Cult Alpha (Leader)',       145, 5, 3, 3, 3, 3, 2, 3, 2, 3, 5, 5, 4],
-    ['Hybrid Acolyte (Champion)',  85, 5, 3, 3, 3, 3, 1, 3, 1, 4, 4, 7, 5],
-    ['Aberrant (Ganger)',          95, 5, 3, 6, 5, 4, 2, 5, 2, 9, 4, 6, 10],
-    ['Neophyte Hybrid (Ganger)',   45, 4, 4, 4, 3, 3, 1, 4, 1, 7, 5, 6, 8],
+// [name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat, sort_order]
+// Stats with "+" stored as the number only (e.g. WS4+ → 4, M5 → 5)
+$fighters = [
+    ['Cult Adept (Leader)',       120, 5, 4, 4, 3, 3, 2, 3, 1,  3, 5, 5,  4, 10],
+    ['Cult Alpha (Leader)',       145, 5, 3, 3, 3, 3, 2, 3, 2,  3, 5, 5,  4, 20],
+    ['Hybrid Acolyte (Champion)',  85, 5, 3, 3, 3, 3, 1, 3, 1,  4, 4, 7,  5, 30],
+    ['Aberrant (Ganger)',          95, 5, 3, 6, 5, 4, 2, 5, 2,  9, 4, 6, 10, 40],
+    ['Neophyte Hybrid (Ganger)',   45, 4, 4, 4, 3, 3, 1, 4, 1,  7, 5, 6,  8, 50],
 ];
 
-$stmt = $db->prepare("
-    UPDATE fighter_templates
-    SET cost=?, m=?, ws=?, bs=?, s=?, t=?, w=?, i=?, a=?, ld=?, cl=?, wil=?, int_stat=?
-    WHERE gang_type='Genestealer Cult' AND name=?
-");
+$check  = $db->prepare("SELECT id FROM fighter_templates WHERE gang_type='Genestealer Cult' AND name=? LIMIT 1");
+$update = $db->prepare("UPDATE fighter_templates SET cost=?,m=?,ws=?,bs=?,s=?,t=?,w=?,i=?,a=?,ld=?,cl=?,wil=?,int_stat=?,sort_order=? WHERE gang_type='Genestealer Cult' AND name=?");
+$insert = $db->prepare("INSERT INTO fighter_templates (gang_type,name,cost,m,ws,bs,s,t,w,i,a,ld,cl,wil,int_stat,sort_order,notes) VALUES ('Genestealer Cult',?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,'')");
 
-$updated = 0;
-foreach ($updates as [$name, $cost, $m, $ws, $bs, $s, $t, $w, $i, $a, $ld, $cl, $wil, $int_stat]) {
-    $stmt->execute([$cost, $m, $ws, $bs, $s, $t, $w, $i, $a, $ld, $cl, $wil, $int_stat, $name]);
-    $updated += $stmt->rowCount();
+$updated = 0; $inserted = 0;
+foreach ($fighters as [$name, $cost, $m, $ws, $bs, $s, $t, $w, $i, $a, $ld, $cl, $wil, $int_stat, $sort_order]) {
+    $check->execute([$name]);
+    if ($check->fetch()) {
+        $update->execute([$cost, $m, $ws, $bs, $s, $t, $w, $i, $a, $ld, $cl, $wil, $int_stat, $sort_order, $name]);
+        $updated++;
+    } else {
+        $insert->execute([$name, $cost, $m, $ws, $bs, $s, $t, $w, $i, $a, $ld, $cl, $wil, $int_stat, $sort_order]);
+        $inserted++;
+    }
 }
 
 header('Content-Type: text/plain');
 echo "Done!\n";
-echo "Updated $updated fighter templates.\n";
+echo "Inserted $inserted, updated $updated fighter templates.\n";
 echo "\nDelete this file from the server after running.\n";
