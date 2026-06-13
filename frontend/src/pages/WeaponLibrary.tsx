@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { weaponLibraryApi } from '../api'
-import type { WeaponLibraryEntry, GangType } from '../types'
+import type { WeaponLibraryEntry } from '../types'
 
-const GANG_TYPES: GangType[] = [
+const GANG_TYPES: string[] = [
+  'Universal',
   'Goliath', 'Escher', 'Van Saar', 'Delaque', 'Cawdor', 'Orlock',
   'House of Iron', 'Corpse Grinder Cult', 'Genestealer Cult', 'Enforcers',
 ]
@@ -13,7 +14,7 @@ const PROFILE_LABELS = ['Rng S','Rng L','Hit S','Hit L','Str','AP','Dmg','Ammo']
 type ProfileKey = typeof PROFILE_KEYS[number]
 
 const EMPTY: Omit<WeaponLibraryEntry, 'id'> = {
-  gang_type: 'Genestealer Cult', category: '', name: '', cost: 0,
+  gang_type: 'Universal', category: '', name: '', cost: 0,
   range_s: '-', range_l: '-', hit_s: '-', hit_l: '-',
   str: '-', ap: '-', dmg: '1', ammo: '-',
   traits: '', sort_order: 0,
@@ -21,7 +22,7 @@ const EMPTY: Omit<WeaponLibraryEntry, 'id'> = {
 
 export default function WeaponLibrary() {
   const [weapons, setWeapons] = useState<WeaponLibraryEntry[]>([])
-  const [filterGang, setFilterGang] = useState<string>('Genestealer Cult')
+  const [filterGang, setFilterGang] = useState<string>('Universal')
   const [editing, setEditing] = useState<WeaponLibraryEntry | null>(null)
   const [creating, setCreating] = useState(false)
   const [form, setForm] = useState<Omit<WeaponLibraryEntry, 'id'>>(EMPTY)
