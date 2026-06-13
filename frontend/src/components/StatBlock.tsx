@@ -7,9 +7,10 @@ interface Props {
   stats: FighterStats
   editable?: boolean
   onChange?: (key: keyof FighterStats, val: number) => void
+  redStats?: (keyof FighterStats)[]
 }
 
-export default function StatBlock({ stats, editable, onChange }: Props) {
+export default function StatBlock({ stats, editable, onChange, redStats = [] }: Props) {
   return (
     <div className="overflow-x-auto">
       <table className="font-mono text-sm border-collapse w-full min-w-max">
@@ -24,22 +25,27 @@ export default function StatBlock({ stats, editable, onChange }: Props) {
         </thead>
         <tbody>
           <tr>
-            {STAT_KEYS.map((key, i) => (
-              <td key={key} className="border border-dark-600 bg-dark-800 text-center px-2 py-1">
-                {editable ? (
-                  <input
-                    type="number"
-                    min={1}
-                    max={20}
-                    value={stats[key]}
-                    onChange={e => onChange?.(key, Number(e.target.value))}
-                    className="w-10 bg-transparent text-center text-dark-100 focus:outline-none focus:text-gold-400"
-                  />
-                ) : (
-                  <span className="text-dark-100">{stats[key]}{['m','ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}</span>
-                )}
-              </td>
-            ))}
+            {STAT_KEYS.map((key) => {
+              const isRed = redStats.includes(key)
+              return (
+                <td key={key} className="border border-dark-600 bg-dark-800 text-center px-2 py-1">
+                  {editable ? (
+                    <input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={stats[key]}
+                      onChange={e => onChange?.(key, Number(e.target.value))}
+                      className="w-10 bg-transparent text-center text-dark-100 focus:outline-none focus:text-gold-400"
+                    />
+                  ) : (
+                    <span className={isRed ? 'text-red-500 font-bold' : 'text-dark-100'}>
+                      {stats[key]}{['m','ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}
+                    </span>
+                  )}
+                </td>
+              )
+            })}
           </tr>
         </tbody>
       </table>

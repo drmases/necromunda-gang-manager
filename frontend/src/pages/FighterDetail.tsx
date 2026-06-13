@@ -23,6 +23,8 @@ export default function FighterDetail() {
   const [weaponName, setWeaponName]     = useState('')
   const [weaponCost, setWeaponCost]     = useState(0)
   const [weaponNotes, setWeaponNotes]   = useState('')
+  const [woundChecks, setWoundChecks]           = useState<boolean[]>([])
+  const [fleshWoundChecks, setFleshWoundChecks] = useState<boolean[]>([])
   const [armourName, setArmourName]     = useState('')
   const [armourCost, setArmourCost]     = useState(0)
   const [armourNotes, setArmourNotes]   = useState('')
@@ -154,9 +156,31 @@ export default function FighterDetail() {
     setRefresh(r => r + 1)
   }
 
-  const stats: FighterStats = editing ? editState : {
+  const woundsUsed      = woundChecks.filter(Boolean).length
+  const fleshWoundsUsed = fleshWoundChecks.filter(Boolean).length
+
+  const baseStats: FighterStats = editing ? editState : {
     m: f.m, ws: f.ws, bs: f.bs, s: f.s, t: f.t,
     w: f.w, i: f.i, a: f.a, ld: f.ld, cl: f.cl, wil: f.wil, int: f.int,
+  }
+
+  const stats: FighterStats = {
+    ...baseStats,
+    w: Math.max(0, baseStats.w - woundsUsed),
+    t: Math.max(0, baseStats.t - fleshWoundsUsed),
+  }
+
+  const redStats: (keyof FighterStats)[] = [
+    ...(woundsUsed > 0 ? ['w' as const] : []),
+    ...(fleshWoundsUsed > 0 ? ['t' as const] : []),
+  ]
+
+  function toggleWound(i: number) {
+    setWoundChecks(prev => prev.map((v, idx) => idx === i ? !v : v))
+  }
+
+  function toggleFleshWound(i: number) {
+    setFleshWoundChecks(prev => prev.map((v, idx) => idx === i ? !v : v))
   }
 
   return (
@@ -236,10 +260,65 @@ export default function FighterDetail() {
       )}
 
       {/* Stat block */}
-      <div className="mb-6">
+      <div className="mb-4">
         <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest mb-2">Stats</h2>
-        <StatBlock stats={stats} editable={editing} onChange={handleStatChange} />
+        <StatBlock stats={stats} editable={editing} onChange={handleStatChange} redStats={redStats} />
       </div>
+
+      {/* Battle tracker */}
+      {!editing && (
+        <div className="mb-6 border border-dark-700 bg-dark-900/50 rounded p-3">
+          <div className="flex items-center gap-2 mb-3">
+            <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest">Battle Tracker</h2>
+            <button
+              onClick={() => { setWoundChecks(Array(f.w).fill(false)); setFleshWoundChecks(Array(f.t).fill(false)) }}
+              className="text-xs text-dark-400 hover:text-dark-200 transition-colors ml-auto"
+            >
+              Reset
+            </button>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <div className="text-xs text-dark-400 mb-1.5">Wounds <span className="font-mono text-dark-500">({stats.w} remaining)</span></div>
+              <div className="flex gap-2 flex-wrap">
+                {Array.from({ length: f.w }).map((_, i) => {
+                  const checked = woundChecks[i] ?? false
+                  return (
+                    <label key={i} className="flex items-center gap-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleWound(i)}
+                        className="w-5 h-5 accent-red-600 cursor-pointer"
+                      />
+                      <span className={`text-xs font-mono ${checked ? 'text-red-500' : 'text-dark-400'}`}>{i + 1}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+            <div>
+              <div className="text-xs text-dark-400 mb-1.5">Flesh Wounds <span className="font-mono text-dark-500">({stats.t} remaining)</span></div>
+              <div className="flex gap-2 flex-wrap">
+                {Array.from({ length: f.t }).map((_, i) => {
+                  const checked = fleshWoundChecks[i] ?? false
+                  return (
+                    <label key={i} className="flex items-center gap-1 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleFleshWound(i)}
+                        className="w-5 h-5 accent-red-600 cursor-pointer"
+                      />
+                      <span className={`text-xs font-mono ${checked ? 'text-red-500' : 'text-dark-400'}`}>{i + 1}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Weapons */}
       <Section title="Weapons">
