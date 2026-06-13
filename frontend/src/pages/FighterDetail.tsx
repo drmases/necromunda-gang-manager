@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../store'
 import StatBlock from '../components/StatBlock'
-import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Wargear, SpecialRule } from '../types'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule } from '../types'
 import { fighterApi } from '../api'
 
 export default function FighterDetail() {
@@ -23,6 +23,9 @@ export default function FighterDetail() {
   const [weaponName, setWeaponName]     = useState('')
   const [weaponCost, setWeaponCost]     = useState(0)
   const [weaponNotes, setWeaponNotes]   = useState('')
+  const [armourName, setArmourName]     = useState('')
+  const [armourCost, setArmourCost]     = useState(0)
+  const [armourNotes, setArmourNotes]   = useState('')
   const [wargearName, setWargearName]   = useState('')
   const [wargearCost, setWargearCost]   = useState(0)
   const [wargearNotes, setWargearNotes] = useState('')
@@ -109,6 +112,19 @@ export default function FighterDetail() {
 
   const removeWeapon = async (weaponId: number) => {
     await fighterApi.deleteWeapon(f.id, weaponId)
+    setRefresh(r => r + 1)
+  }
+
+  const addArmour = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!armourName.trim()) return
+    await fighterApi.addArmour(f.id, { name: armourName.trim(), cost: armourCost, notes: armourNotes.trim() })
+    setArmourName(''); setArmourCost(0); setArmourNotes('')
+    setRefresh(r => r + 1)
+  }
+
+  const removeArmour = async (armourId: number) => {
+    await fighterApi.deleteArmour(f.id, armourId)
     setRefresh(r => r + 1)
   }
 
@@ -225,46 +241,74 @@ export default function FighterDetail() {
         <StatBlock stats={stats} editable={editing} onChange={handleStatChange} />
       </div>
 
-      {/* Skills */}
-      <Section title="Skills">
-        {(f.skills ?? []).length > 0 && (
+      {/* Weapons */}
+      <Section title="Weapons">
+        {(f.weapons ?? []).length > 0 && (
           <div className="space-y-1 mb-3">
-            {(f.skills ?? []).map((sk: Skill) => (
-              <div key={sk.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
-                <span><span className="text-gold-500">{sk.skill_name}</span>{sk.skill_category && <span className="text-dark-400 ml-2 text-xs">({sk.skill_category})</span>}</span>
-                <button onClick={() => removeSkill(sk.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+            {(f.weapons ?? []).map((wp: Weapon) => (
+              <div key={wp.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-dark-100">{wp.name}</span>
+                  {wp.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wp.cost}</span>}
+                  {wp.notes && <span className="text-dark-400 text-xs ml-2">{wp.notes}</span>}
+                </span>
+                <button onClick={() => removeWeapon(wp.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
               </div>
             ))}
           </div>
         )}
-        <form onSubmit={addSkill} className="flex gap-2">
-          <input value={skillName} onChange={e => setSkillName(e.target.value)} placeholder="Skill name" className="input-sm flex-1" />
-          <input value={skillCat} onChange={e => setSkillCat(e.target.value)} placeholder="Category" className="input-sm w-32" />
+        <form onSubmit={addWeapon} className="flex gap-2">
+          <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
+          <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input value={weaponNotes} onChange={e => setWeaponNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>
 
-      {/* Injuries */}
-      <Section title="Injuries">
-        {(f.injuries ?? []).length > 0 && (
+      {/* Armour */}
+      <Section title="Armour">
+        {(f.armour ?? []).length > 0 && (
           <div className="space-y-1 mb-3">
-            {(f.injuries ?? []).map((inj: Injury) => (
-              <div key={inj.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+            {(f.armour ?? []).map((ar: Armour) => (
+              <div key={ar.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
                 <span>
-                  <span className={inj.permanent ? 'text-blood-500' : 'text-dark-200'}>{inj.injury_name}</span>
-                  {inj.permanent && <span className="text-xs text-blood-600 ml-2">permanent</span>}
+                  <span className="text-dark-100">{ar.name}</span>
+                  {ar.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{ar.cost}</span>}
+                  {ar.notes && <span className="text-dark-400 text-xs ml-2">{ar.notes}</span>}
                 </span>
-                <button onClick={() => removeInjury(inj.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+                <button onClick={() => removeArmour(ar.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
               </div>
             ))}
           </div>
         )}
-        <form onSubmit={addInjury} className="flex gap-2 items-center">
-          <input value={injuryName} onChange={e => setInjuryName(e.target.value)} placeholder="Injury name" className="input-sm flex-1" />
-          <label className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer whitespace-nowrap">
-            <input type="checkbox" checked={injuryPerm} onChange={e => setInjuryPerm(e.target.checked)} className="accent-blood-500" />
-            Permanent
-          </label>
+        <form onSubmit={addArmour} className="flex gap-2">
+          <input value={armourName} onChange={e => setArmourName(e.target.value)} placeholder="Armour name" className="input-sm flex-1" />
+          <input type="number" min={0} value={armourCost} onChange={e => setArmourCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input value={armourNotes} onChange={e => setArmourNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Wargear */}
+      <Section title="Wargear">
+        {(f.wargear ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.wargear ?? []).map((wg: Wargear) => (
+              <div key={wg.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className="text-dark-100">{wg.name}</span>
+                  {wg.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wg.cost}</span>}
+                  {wg.notes && <span className="text-dark-400 text-xs ml-2">{wg.notes}</span>}
+                </span>
+                <button onClick={() => removeWargear(wg.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addWargear} className="flex gap-2">
+          <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
+          <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input value={wargearNotes} onChange={e => setWargearNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>
@@ -297,50 +341,21 @@ export default function FighterDetail() {
         </form>
       </Section>
 
-      {/* Weapons */}
-      <Section title="Weapons">
-        {(f.weapons ?? []).length > 0 && (
+      {/* Skills */}
+      <Section title="Skills">
+        {(f.skills ?? []).length > 0 && (
           <div className="space-y-1 mb-3">
-            {(f.weapons ?? []).map((wp: Weapon) => (
-              <div key={wp.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
-                <span>
-                  <span className="text-dark-100">{wp.name}</span>
-                  {wp.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wp.cost}</span>}
-                  {wp.notes && <span className="text-dark-400 text-xs ml-2">{wp.notes}</span>}
-                </span>
-                <button onClick={() => removeWeapon(wp.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+            {(f.skills ?? []).map((sk: Skill) => (
+              <div key={sk.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span><span className="text-gold-500">{sk.skill_name}</span>{sk.skill_category && <span className="text-dark-400 ml-2 text-xs">({sk.skill_category})</span>}</span>
+                <button onClick={() => removeSkill(sk.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
               </div>
             ))}
           </div>
         )}
-        <form onSubmit={addWeapon} className="flex gap-2">
-          <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
-          <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
-          <input value={weaponNotes} onChange={e => setWeaponNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
-          <button type="submit" className="btn-sm">Add</button>
-        </form>
-      </Section>
-
-      {/* Wargear */}
-      <Section title="Wargear">
-        {(f.wargear ?? []).length > 0 && (
-          <div className="space-y-1 mb-3">
-            {(f.wargear ?? []).map((wg: Wargear) => (
-              <div key={wg.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
-                <span>
-                  <span className="text-dark-100">{wg.name}</span>
-                  {wg.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{wg.cost}</span>}
-                  {wg.notes && <span className="text-dark-400 text-xs ml-2">{wg.notes}</span>}
-                </span>
-                <button onClick={() => removeWargear(wg.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
-              </div>
-            ))}
-          </div>
-        )}
-        <form onSubmit={addWargear} className="flex gap-2">
-          <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
-          <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
-          <input value={wargearNotes} onChange={e => setWargearNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
+        <form onSubmit={addSkill} className="flex gap-2">
+          <input value={skillName} onChange={e => setSkillName(e.target.value)} placeholder="Skill name" className="input-sm flex-1" />
+          <input value={skillCat} onChange={e => setSkillCat(e.target.value)} placeholder="Category" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>
@@ -363,6 +378,31 @@ export default function FighterDetail() {
         <form onSubmit={addSpecialRule} className="flex gap-2">
           <input value={ruleName} onChange={e => setRuleName(e.target.value)} placeholder="Rule name" className="input-sm flex-1" />
           <input value={ruleDesc} onChange={e => setRuleDesc(e.target.value)} placeholder="Description" className="input-sm flex-1" />
+          <button type="submit" className="btn-sm">Add</button>
+        </form>
+      </Section>
+
+      {/* Injuries */}
+      <Section title="Injuries">
+        {(f.injuries ?? []).length > 0 && (
+          <div className="space-y-1 mb-3">
+            {(f.injuries ?? []).map((inj: Injury) => (
+              <div key={inj.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
+                <span>
+                  <span className={inj.permanent ? 'text-blood-500' : 'text-dark-200'}>{inj.injury_name}</span>
+                  {inj.permanent && <span className="text-xs text-blood-600 ml-2">permanent</span>}
+                </span>
+                <button onClick={() => removeInjury(inj.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )}
+        <form onSubmit={addInjury} className="flex gap-2 items-center">
+          <input value={injuryName} onChange={e => setInjuryName(e.target.value)} placeholder="Injury name" className="input-sm flex-1" />
+          <label className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer whitespace-nowrap">
+            <input type="checkbox" checked={injuryPerm} onChange={e => setInjuryPerm(e.target.checked)} className="accent-blood-500" />
+            Permanent
+          </label>
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>

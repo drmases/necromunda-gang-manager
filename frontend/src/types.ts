@@ -63,6 +63,14 @@ export interface Wargear {
   notes: string
 }
 
+export interface Armour {
+  id: number
+  fighter_id: number
+  name: string
+  cost: number
+  notes: string
+}
+
 export interface SpecialRule {
   id: number
   fighter_id: number
@@ -85,6 +93,7 @@ export interface Fighter extends FighterStats {
   injuries?: Injury[]
   equipment?: Equipment[]
   weapons?: Weapon[]
+  armour?: Armour[]
   wargear?: Wargear[]
   special_rules?: SpecialRule[]
 }

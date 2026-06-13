@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Wargear, SpecialRule } from './types'
+import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule } from './types'
 
 const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
 
@@ -50,6 +50,8 @@ export const fighterApi = {
 
   addWeapon:        (fighterId: number, data: Partial<Weapon>)      => api.post<Weapon>(`/fighter.php?id=${fighterId}&action=weapon`, data),
   deleteWeapon:     (fighterId: number, weaponId: number)            => api.delete(`/fighter.php?id=${fighterId}&action=weapon&weapon_id=${weaponId}`),
+  addArmour:        (fighterId: number, data: Partial<Armour>)       => api.post<Armour>(`/fighter.php?id=${fighterId}&action=armour`, data),
+  deleteArmour:     (fighterId: number, armourId: number)            => api.delete(`/fighter.php?id=${fighterId}&action=armour&armour_id=${armourId}`),
   addWargear:       (fighterId: number, data: Partial<Wargear>)      => api.post<Wargear>(`/fighter.php?id=${fighterId}&action=wargear`, data),
   deleteWargear:    (fighterId: number, wargearId: number)           => api.delete(`/fighter.php?id=${fighterId}&action=wargear&wargear_id=${wargearId}`),
   addSpecialRule:   (fighterId: number, data: Partial<SpecialRule>)  => api.post<SpecialRule>(`/fighter.php?id=${fighterId}&action=special_rule`, data),

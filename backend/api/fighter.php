@@ -84,6 +84,24 @@ if ($action === 'weapon') {
     }
 }
 
+if ($action === 'armour') {
+    if ($method === 'POST') {
+        $body = getBody();
+        $stmt = $db->prepare('INSERT INTO fighter_armour (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
+        $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        $row = $db->prepare('SELECT * FROM fighter_armour WHERE id = ?');
+        $row->execute([(int)$db->lastInsertId()]);
+        $ar = $row->fetch();
+        $ar['id'] = (int)$ar['id']; $ar['cost'] = (int)$ar['cost'];
+        jsonResponse($ar, 201);
+    }
+    if ($method === 'DELETE') {
+        $armourId = (int)($_GET['armour_id'] ?? 0);
+        $db->prepare('DELETE FROM fighter_armour WHERE id = ? AND fighter_id = ?')->execute([$armourId, $id]);
+        jsonResponse(['deleted' => true]);
+    }
+}
+
 if ($action === 'wargear') {
     if ($method === 'POST') {
         $body = getBody();
@@ -152,6 +170,12 @@ if ($method === 'GET') {
     foreach ($ws as &$w) { $w['id'] = (int)$w['id']; $w['cost'] = (int)$w['cost']; }
     $fighter['weapons'] = $ws;
 
+    $ars = $db->prepare('SELECT * FROM fighter_armour WHERE fighter_id = ?');
+    $ars->execute([$id]);
+    $arList = $ars->fetchAll();
+    foreach ($arList as &$ar) { $ar['id'] = (int)$ar['id']; $ar['cost'] = (int)$ar['cost']; }
+    $fighter['armour'] = $arList;
+
     $wgs = $db->prepare('SELECT * FROM fighter_wargear WHERE fighter_id = ?');
     $wgs->execute([$id]);
     $wgList = $wgs->fetchAll();
@@ -218,6 +242,12 @@ if ($method === 'PUT') {
     $ws2 = $wpns2->fetchAll();
     foreach ($ws2 as &$w2) { $w2['id'] = (int)$w2['id']; $w2['cost'] = (int)$w2['cost']; }
     $fighter['weapons'] = $ws2;
+
+    $ars2 = $db->prepare('SELECT * FROM fighter_armour WHERE fighter_id = ?');
+    $ars2->execute([$id]);
+    $arList2 = $ars2->fetchAll();
+    foreach ($arList2 as &$ar2) { $ar2['id'] = (int)$ar2['id']; $ar2['cost'] = (int)$ar2['cost']; }
+    $fighter['armour'] = $arList2;
 
     $wgs2 = $db->prepare('SELECT * FROM fighter_wargear WHERE fighter_id = ?');
     $wgs2->execute([$id]);
