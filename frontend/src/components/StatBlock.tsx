@@ -30,14 +30,21 @@ export default function StatBlock({ stats, editable, onChange, redStats = [] }: 
               return (
                 <td key={key} className="border border-dark-600 bg-dark-800 text-center px-2 py-1">
                   {editable ? (
-                    <input
-                      type="number"
-                      min={1}
-                      max={20}
-                      value={stats[key]}
-                      onChange={e => onChange?.(key, Number(e.target.value))}
-                      className="w-10 bg-transparent text-center text-dark-100 focus:outline-none focus:text-gold-400"
-                    />
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={stats[key]}
+                        onChange={e => onChange?.(key, Number(e.target.value))}
+                        className="w-10 bg-transparent text-center text-dark-100 focus:outline-none focus:text-gold-400 pr-3"
+                      />
+                      {(key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : '') &&
+                        <span className="absolute right-0 top-1/2 -translate-y-1/2 text-xs text-dark-400 pointer-events-none">
+                          {key === 'm' ? '"' : '+'}
+                        </span>
+                      }
+                    </div>
                   ) : (
                     <span className={isRed ? 'text-red-500 font-bold' : 'text-dark-100'}>
                       {stats[key]}{key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}
