@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../store'
 import StatBlock from '../components/StatBlock'
-import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry } from '../types'
-import { fighterApi, gangApi, weaponLibraryApi, skillLibraryApi } from '../api'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry, InjuryLibraryEntry } from '../types'
+import { fighterApi, gangApi, weaponLibraryApi, skillLibraryApi, injuryLibraryApi } from '../api'
 
 export default function FighterDetail() {
   const { id } = useParams<{ id: string }>()
@@ -37,6 +37,7 @@ export default function FighterDetail() {
   const [gangType, setGangType]         = useState<string | null>(null)
   const [weaponLibrary, setWeaponLibrary] = useState<WeaponLibraryEntry[]>([])
   const [skillLibrary, setSkillLibrary] = useState<SkillLibraryEntry[]>([])
+  const [injuryLibrary, setInjuryLibrary] = useState<InjuryLibraryEntry[]>([])
 
   const WEAPON_CATS = ['Pistol','Basic Weapon','Close Combat Weapon','Heavy Weapon','Power/Shock Weapon','Special Weapon','Two-Handed Weapon']
   const ARMOUR_CATS = ['Armour']
@@ -56,6 +57,10 @@ export default function FighterDetail() {
       setFleshWoundChecks(Array(currentFighter.t).fill(false))
     }
   }, [currentFighter?.id])
+
+  useEffect(() => {
+    injuryLibraryApi.list().then(r => setInjuryLibrary(Array.isArray(r.data) ? r.data : [])).catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!currentFighter) return
@@ -618,7 +623,24 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addInjury} className="flex gap-2 items-center">
-          <input value={injuryName} onChange={e => setInjuryName(e.target.value)} placeholder="Injury name" className="input-sm flex-1" />
+          {injuryLibrary.length > 0 ? (
+            <select
+              value={injuryName}
+              onChange={e => setInjuryName(e.target.value)}
+              className="bg-dark-700 border border-dark-600 text-dark-100 rounded px-2 py-1 text-sm focus:outline-none focus:border-gold-600 flex-1"
+            >
+              <option value="">— Select injury —</option>
+              {Array.from(new Set(injuryLibrary.map(i => i.category))).map(cat => (
+                <optgroup key={cat} label={cat}>
+                  {injuryLibrary.filter(i => i.category === cat).map(i => (
+                    <option key={i.id} value={i.name}>{i.name}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          ) : (
+            <input value={injuryName} onChange={e => setInjuryName(e.target.value)} placeholder="Injury name" className="input-sm flex-1" />
+          )}
           <label className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer whitespace-nowrap">
             <input type="checkbox" checked={injuryPerm} onChange={e => setInjuryPerm(e.target.checked)} className="accent-blood-500" />
             Permanent
