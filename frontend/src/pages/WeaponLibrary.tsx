@@ -214,15 +214,15 @@ export default function WeaponLibrary() {
             <label className="text-xs text-dark-300 block mb-2">Factions</label>
             <div className="flex flex-wrap gap-x-4 gap-y-1.5">
               {GANG_TYPES.filter(g => g !== 'Universal').map(g => {
-                const checked = form.factions.split(',').map(s => s.trim()).filter(Boolean).includes(g)
+                const factionList = (form.factions || '').split(',').map(s => s.trim()).filter(Boolean)
+                const checked = factionList.includes(g)
                 return (
                   <label key={g} className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={checked}
                       onChange={() => {
-                        const current = form.factions.split(',').map(s => s.trim()).filter(Boolean)
-                        const updated = checked ? current.filter(f => f !== g) : [...current, g]
+                        const updated = checked ? factionList.filter(f => f !== g) : [...factionList, g]
                         setField('factions', updated.join(','))
                       }}
                       className="accent-gold-500"
