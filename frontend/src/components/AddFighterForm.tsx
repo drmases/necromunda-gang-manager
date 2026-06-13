@@ -69,22 +69,19 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
           <label className="text-xs text-dark-300 block mb-1">
             Pick role from {gangType} roster
           </label>
-          <div className="flex flex-wrap gap-2">
+          <select
+            value={fighterRole}
+            onChange={e => {
+              const t = templates.find(t => t.name === e.target.value)
+              if (t) applyTemplate(t)
+            }}
+            className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+          >
+            <option value="">— Select fighter type —</option>
             {templates.map(t => (
-              <button
-                key={t.id}
-                type="button"
-                onClick={() => applyTemplate(t)}
-                className={`px-3 py-1 text-xs border rounded transition-colors ${
-                  fighterRole === t.name
-                    ? 'border-gold-500 bg-gold-900/30 text-gold-400'
-                    : 'border-dark-600 bg-dark-700 hover:border-gold-600 hover:text-gold-400 text-dark-200'
-                }`}
-              >
-                {t.name} <span className="font-mono opacity-60">({t.cost}¢)</span>
-              </button>
+              <option key={t.id} value={t.name}>{t.name} ({t.cost}¢)</option>
             ))}
-          </div>
+          </select>
         </div>
       )}
 

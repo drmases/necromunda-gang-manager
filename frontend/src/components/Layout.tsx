@@ -26,7 +26,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               to="/templates"
               className={`hover:text-gold-400 transition-colors ${location.pathname === '/templates' ? 'text-gold-500' : 'text-dark-300'}`}
             >
-              Templates
+              Fighters
             </Link>
             <Link
               to="/weapons"
