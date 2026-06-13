@@ -79,19 +79,18 @@ $skills = [
     ['Force Blast', 'Telekinesis', 'Genestealer Cult', 'Leader,Champion', 1110],
 ];
 
-$stmt = $db->prepare('
-    INSERT INTO skill_library (name, category, factions, roles, sort_order)
-    SELECT ?, ?, ?, ?, ?
-    FROM DUAL
-    WHERE NOT EXISTS (
-        SELECT 1 FROM skill_library WHERE name = ? AND category = ?
-    )
-');
+$check  = $db->prepare('SELECT id FROM skill_library WHERE name = ? AND category = ? LIMIT 1');
+$insert = $db->prepare('INSERT INTO skill_library (name, category, factions, roles, sort_order) VALUES (?, ?, ?, ?, ?)');
 
 $inserted = 0;
 foreach ($skills as [$name, $category, $factions, $roles, $sort_order]) {
-    $stmt->execute([$name, $category, $factions, $roles, $sort_order, $name, $category]);
-    $inserted += $stmt->rowCount();
+    $check->execute([$name, $category]);
+    if (!$check->fetch()) {
+        $insert->execute([$name, $category, $factions, $roles, $sort_order]);
+        $inserted++;
+    }
 }
 
-jsonResponse(['inserted' => $inserted, 'total' => count($skills)]);
+header('Content-Type: text/plain');
+echo "Done!\n";
+echo "Inserted $inserted skills (skipped " . (count($skills) - $inserted) . " duplicates).\n";
