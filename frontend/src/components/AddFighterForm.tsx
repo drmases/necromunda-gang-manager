@@ -4,7 +4,7 @@ import { DEFAULT_STATS } from '../types'
 import { fighterTemplatesApi } from '../api'
 
 const STAT_KEYS: (keyof FighterStats)[] = ['m', 'ws', 'bs', 's', 't', 'w', 'i', 'a', 'ld', 'cl', 'wil', 'int']
-const STAT_LABELS = ['M', 'WS', 'BS', 'S', 'T', 'W', 'I', 'A', 'Ld', 'Cl', 'Wil', 'Int']
+const STAT_LABELS = ['M"', 'WS+', 'BS+', 'S', 'T', 'W', 'I+', 'A', 'Ld+', 'Cl+', 'Wil+', 'Int+']
 
 interface Props {
   gangType: string
@@ -119,22 +119,17 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
           {STAT_LABELS.map(l => (
             <div key={l} className="text-center text-xs text-gold-600 font-display">{l}</div>
           ))}
-          {STAT_KEYS.map(key => {
-            const suffix = key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''
-            return (
-              <div key={key} className="relative">
-                <input
-                  type="number"
-                  min={1}
-                  max={20}
-                  value={stats[key]}
-                  onChange={e => handleStatChange(key, Number(e.target.value))}
-                  className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-1 py-1 text-xs text-center focus:outline-none focus:border-gold-600 font-mono pr-3"
-                />
-                {suffix && <span className="absolute right-1 top-1/2 -translate-y-1/2 text-xs text-dark-400 pointer-events-none">{suffix}</span>}
-              </div>
-            )
-          })}
+          {STAT_KEYS.map(key => (
+            <input
+              key={key}
+              type="number"
+              min={1}
+              max={20}
+              value={stats[key]}
+              onChange={e => handleStatChange(key, Number(e.target.value))}
+              className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-1 py-1 text-xs text-center focus:outline-none focus:border-gold-600 font-mono"
+            />
+          ))}
         </div>
         </div>
       </div>
