@@ -29,8 +29,14 @@ export const fighterTemplatesApi = {
 }
 
 export const weaponLibraryApi = {
-  list:   (gangType?: string) =>
-    api.get<WeaponLibraryEntry[]>('/weapon_library.php' + (gangType ? `?gang_type=${encodeURIComponent(gangType)}` : '')),
+  list:   (params?: { gangType?: string; faction?: string }) => {
+    const qs = params?.faction
+      ? `?faction=${encodeURIComponent(params.faction)}`
+      : params?.gangType
+      ? `?gang_type=${encodeURIComponent(params.gangType)}`
+      : ''
+    return api.get<WeaponLibraryEntry[]>('/weapon_library.php' + qs)
+  },
   create: (data: Partial<WeaponLibraryEntry>) => api.post<WeaponLibraryEntry>('/weapon_library.php', data),
   update: (id: number, data: Partial<WeaponLibraryEntry>) => api.put<WeaponLibraryEntry>(`/weapon_library.php?id=${id}`, data),
   delete: (id: number) => api.delete(`/weapon_library.php?id=${id}`),

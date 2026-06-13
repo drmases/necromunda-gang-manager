@@ -51,7 +51,7 @@ export default function FighterDetail() {
     gangApi.get(currentFighter.gang_id).then(res => {
       const gt = res.data.type
       setGangType(gt)
-      weaponLibraryApi.list(gt).then(r => setWeaponLibrary(Array.isArray(r.data) ? r.data : []))
+      weaponLibraryApi.list({ faction: gt }).then(r => setWeaponLibrary(Array.isArray(r.data) ? r.data : []))
     }).catch(() => {})
   }, [currentFighter?.gang_id])
 

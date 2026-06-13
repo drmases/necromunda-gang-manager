@@ -15,7 +15,10 @@ if ($method === 'GET') {
         $row = decodeWeapon($row);
         jsonResponse($row);
     }
-    if (isset($_GET['gang_type'])) {
+    if (isset($_GET['faction'])) {
+        $stmt = $db->prepare('SELECT * FROM weapon_library WHERE FIND_IN_SET(?, factions) > 0 ORDER BY category, sort_order, name');
+        $stmt->execute([$_GET['faction']]);
+    } elseif (isset($_GET['gang_type'])) {
         $stmt = $db->prepare('SELECT * FROM weapon_library WHERE gang_type = ? ORDER BY sort_order, name');
         $stmt->execute([$_GET['gang_type']]);
     } else {
@@ -30,14 +33,14 @@ if ($method === 'POST') {
     $data = validateWeapon($body);
     $stmt = $db->prepare('
         INSERT INTO weapon_library
-            (gang_type, category, name, cost, range_s, range_l, hit_s, hit_l, str, ap, dmg, ammo, traits, sort_order)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (gang_type, category, name, cost, range_s, range_l, hit_s, hit_l, str, ap, dmg, ammo, traits, factions, sort_order)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ');
     $stmt->execute([
         $data['gang_type'], $data['category'], $data['name'], $data['cost'],
         $data['range_s'], $data['range_l'], $data['hit_s'], $data['hit_l'],
         $data['str'], $data['ap'], $data['dmg'], $data['ammo'],
-        $data['traits'], $data['sort_order'],
+        $data['traits'], $data['factions'], $data['sort_order'],
     ]);
     $newId = (int)$db->lastInsertId();
     $row = $db->query("SELECT * FROM weapon_library WHERE id = $newId")->fetch();
@@ -52,14 +55,14 @@ if ($method === 'PUT') {
         UPDATE weapon_library SET
             gang_type=?, category=?, name=?, cost=?,
             range_s=?, range_l=?, hit_s=?, hit_l=?,
-            str=?, ap=?, dmg=?, ammo=?, traits=?, sort_order=?
+            str=?, ap=?, dmg=?, ammo=?, traits=?, factions=?, sort_order=?
         WHERE id=?
     ');
     $stmt->execute([
         $data['gang_type'], $data['category'], $data['name'], $data['cost'],
         $data['range_s'], $data['range_l'], $data['hit_s'], $data['hit_l'],
         $data['str'], $data['ap'], $data['dmg'], $data['ammo'],
-        $data['traits'], $data['sort_order'], $id,
+        $data['traits'], $data['factions'], $data['sort_order'], $id,
     ]);
     $row = $db->query("SELECT * FROM weapon_library WHERE id = $id")->fetch();
     if (!$row) jsonError('Not found', 404);
@@ -94,6 +97,7 @@ function validateWeapon(array $body): array {
         'dmg'        => trim($body['dmg']         ?? '1'),
         'ammo'       => trim($body['ammo']        ?? '-'),
         'traits'     => trim($body['traits']      ?? ''),
+        'factions'   => trim($body['factions']    ?? ''),
         'sort_order' => (int)($body['sort_order'] ?? 0),
     ];
 }

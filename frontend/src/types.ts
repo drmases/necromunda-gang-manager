@@ -93,6 +93,7 @@ export interface WeaponLibraryEntry {
   dmg: string
   ammo: string
   traits: string
+  factions: string
   sort_order: number
 }
 

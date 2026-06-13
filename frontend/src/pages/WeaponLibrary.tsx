@@ -17,7 +17,7 @@ const EMPTY: Omit<WeaponLibraryEntry, 'id'> = {
   gang_type: 'Universal', category: '', name: '', cost: 0,
   range_s: '-', range_l: '-', hit_s: '-', hit_l: '-',
   str: '-', ap: '-', dmg: '1', ammo: '-',
-  traits: '', sort_order: 0,
+  traits: '', factions: '', sort_order: 0,
 }
 
 export default function WeaponLibrary() {
@@ -40,7 +40,9 @@ export default function WeaponLibrary() {
     }
   }
 
-  const filtered = weapons.filter(w => w.gang_type === filterGang)
+  const filtered = filterGang === '__unassigned__'
+    ? weapons.filter(w => !w.factions || w.factions === '')
+    : weapons.filter(w => w.gang_type === filterGang)
 
   // Group by category
   const grouped = filtered.reduce<Record<string, WeaponLibraryEntry[]>>((acc, w) => {
@@ -121,6 +123,7 @@ export default function WeaponLibrary() {
           className="bg-dark-800 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
         >
           {GANG_TYPES.map(g => <option key={g} value={g}>{g}</option>)}
+          <option value="__unassigned__">Unassigned</option>
         </select>
       </div>
 
@@ -200,6 +203,30 @@ export default function WeaponLibrary() {
             />
           </div>
 
+          <div>
+            <label className="text-xs text-dark-300 block mb-2">Factions</label>
+            <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+              {GANG_TYPES.filter(g => g !== 'Universal').map(g => {
+                const checked = form.factions.split(',').map(s => s.trim()).filter(Boolean).includes(g)
+                return (
+                  <label key={g} className="flex items-center gap-1.5 text-xs text-dark-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={() => {
+                        const current = form.factions.split(',').map(s => s.trim()).filter(Boolean)
+                        const updated = checked ? current.filter(f => f !== g) : [...current, g]
+                        setField('factions', updated.join(','))
+                      }}
+                      className="accent-gold-500"
+                    />
+                    {g}
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+
           <div className="flex gap-2 justify-end">
             <button onClick={cancel} className="px-4 py-1.5 text-sm text-dark-300 hover:text-dark-100 transition-colors">
               Cancel
@@ -248,6 +275,10 @@ export default function WeaponLibrary() {
                     {w.traits && (
                       <div className="mt-1 text-xs text-dark-400"><span className="text-dark-500">Traits: </span>{w.traits}</div>
                     )}
+                    <div className="mt-1 text-xs text-dark-400">
+                      <span className="text-dark-500">Factions: </span>
+                      {w.factions ? w.factions : <span className="text-dark-600 italic">Unassigned</span>}
+                    </div>
                   </div>
                 ))}
               </div>
