@@ -22,6 +22,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               + New Gang
             </Link>
+            <Link
+              to="/templates"
+              className={`hover:text-gold-400 transition-colors ${location.pathname === '/templates' ? 'text-gold-500' : 'text-dark-300'}`}
+            >
+              Templates
+            </Link>
           </nav>
         </div>
       </header>

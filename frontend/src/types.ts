@@ -8,6 +8,17 @@ export type FighterType =
 
 export type EquipmentType = 'weapon' | 'armour' | 'equipment'
 
+export interface FighterTemplate {
+  id: number
+  gang_type: string
+  name: string
+  cost: number
+  m: number; ws: number; bs: number; s: number; t: number
+  w: number; i: number; a: number; ld: number; cl: number; wil: number; int_stat: number
+  sort_order: number
+  notes: string
+}
+
 export interface FighterStats {
   m: number; ws: number; bs: number; s: number; t: number
   w: number; i: number; a: number; ld: number; cl: number; wil: number; int: number

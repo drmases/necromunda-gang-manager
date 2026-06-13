@@ -115,7 +115,7 @@ export default function GangDetail() {
 
         {showAddFighter && (
           <div className="mb-4">
-            <AddFighterForm onSubmit={handleAddFighter} onCancel={() => setShowAddFighter(false)} />
+            <AddFighterForm gangType={gang.type} onSubmit={handleAddFighter} onCancel={() => setShowAddFighter(false)} />
           </div>
         )}
 

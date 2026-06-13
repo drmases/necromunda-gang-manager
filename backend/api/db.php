@@ -82,5 +82,26 @@ function initTables(PDO $pdo): void {
             traits     JSON,
             FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+        CREATE TABLE IF NOT EXISTS fighter_templates (
+            id         INT AUTO_INCREMENT PRIMARY KEY,
+            gang_type  VARCHAR(50)  NOT NULL,
+            name       VARCHAR(100) NOT NULL,
+            cost       INT          NOT NULL DEFAULT 0,
+            m          INT          NOT NULL DEFAULT 5,
+            ws         INT          NOT NULL DEFAULT 4,
+            bs         INT          NOT NULL DEFAULT 4,
+            s          INT          NOT NULL DEFAULT 3,
+            t          INT          NOT NULL DEFAULT 3,
+            w          INT          NOT NULL DEFAULT 1,
+            i          INT          NOT NULL DEFAULT 4,
+            a          INT          NOT NULL DEFAULT 1,
+            ld         INT          NOT NULL DEFAULT 6,
+            cl         INT          NOT NULL DEFAULT 7,
+            wil        INT          NOT NULL DEFAULT 7,
+            int_stat   INT          NOT NULL DEFAULT 7,
+            sort_order INT          NOT NULL DEFAULT 0,
+            notes      TEXT         NOT NULL DEFAULT ''
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
     ");
 }

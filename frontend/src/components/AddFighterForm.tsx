@@ -1,28 +1,35 @@
-import { useState } from 'react'
-import type { FighterType, FighterStats } from '../types'
+import { useEffect, useState } from 'react'
+import type { FighterStats, FighterTemplate } from '../types'
 import { DEFAULT_STATS } from '../types'
+import { fighterTemplatesApi } from '../api'
 
-const FIGHTER_TYPES: FighterType[] = [
-  'Leader', 'Champion', 'Ganger', 'Juve', 'Prospect', 'Crew', 'Exotic Beast', 'Hanger-on',
-]
 const STAT_KEYS: (keyof FighterStats)[] = ['m', 'ws', 'bs', 's', 't', 'w', 'i', 'a', 'ld', 'cl', 'wil', 'int']
 const STAT_LABELS = ['M', 'WS', 'BS', 'S', 'T', 'W', 'I', 'A', 'Ld', 'Cl', 'Wil', 'Int']
 
 interface Props {
+  gangType: string
   onSubmit: (data: any) => Promise<void>
   onCancel: () => void
 }
 
-export default function AddFighterForm({ onSubmit, onCancel }: Props) {
+export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) {
+  const [templates, setTemplates] = useState<FighterTemplate[]>([])
   const [name, setName] = useState('')
-  const [type, setType] = useState<FighterType>('Ganger')
+  const [fighterRole, setFighterRole] = useState('')
   const [cost, setCost] = useState(50)
   const [stats, setStats] = useState<FighterStats>(DEFAULT_STATS['Ganger'])
   const [saving, setSaving] = useState(false)
 
-  const handleTypeChange = (t: FighterType) => {
-    setType(t)
-    setStats(DEFAULT_STATS[t])
+  useEffect(() => {
+    fighterTemplatesApi.list(gangType).then(res => {
+      setTemplates(Array.isArray(res.data) ? res.data : [])
+    }).catch(() => setTemplates([]))
+  }, [gangType])
+
+  function applyTemplate(t: FighterTemplate) {
+    setFighterRole(t.name)
+    setCost(t.cost)
+    setStats({ m: t.m, ws: t.ws, bs: t.bs, s: t.s, t: t.t, w: t.w, i: t.i, a: t.a, ld: t.ld, cl: t.cl, wil: t.wil, int: t.int_stat })
   }
 
   const handleStatChange = (key: keyof FighterStats, val: number) => {
@@ -34,7 +41,7 @@ export default function AddFighterForm({ onSubmit, onCancel }: Props) {
     if (!name.trim()) return
     setSaving(true)
     try {
-      await onSubmit({ name: name.trim(), type, cost, ...stats })
+      await onSubmit({ name: name.trim(), type: fighterRole || 'Ganger', cost, ...stats })
     } finally {
       setSaving(false)
     }
@@ -43,26 +50,41 @@ export default function AddFighterForm({ onSubmit, onCancel }: Props) {
   return (
     <form onSubmit={handleSubmit} className="border border-gold-800 bg-dark-800 rounded p-4 space-y-4">
       <h3 className="font-display text-gold-500 text-sm tracking-wider uppercase">Add Fighter</h3>
+
+      {templates.length > 0 && (
+        <div>
+          <label className="text-xs text-dark-300 block mb-1">
+            Pick role from {gangType} roster
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {templates.map(t => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => applyTemplate(t)}
+                className={`px-3 py-1 text-xs border rounded transition-colors ${
+                  fighterRole === t.name
+                    ? 'border-gold-500 bg-gold-900/30 text-gold-400'
+                    : 'border-dark-600 bg-dark-700 hover:border-gold-600 hover:text-gold-400 text-dark-200'
+                }`}
+              >
+                {t.name} <span className="font-mono opacity-60">({t.cost}¢)</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="text-xs text-dark-300 block mb-1">Name</label>
+          <label className="text-xs text-dark-300 block mb-1">Fighter Name</label>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
             required
             className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
-            placeholder="Fighter name"
+            placeholder="e.g. Brother Krix"
           />
-        </div>
-        <div>
-          <label className="text-xs text-dark-300 block mb-1">Type</label>
-          <select
-            value={type}
-            onChange={e => handleTypeChange(e.target.value as FighterType)}
-            className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
-          >
-            {FIGHTER_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
-          </select>
         </div>
         <div>
           <label className="text-xs text-dark-300 block mb-1">Cost (credits)</label>
