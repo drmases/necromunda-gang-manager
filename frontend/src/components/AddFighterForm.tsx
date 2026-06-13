@@ -28,8 +28,21 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
 
   function applyTemplate(t: FighterTemplate) {
     setFighterRole(t.name)
-    setCost(t.cost)
-    setStats({ m: t.m, ws: t.ws, bs: t.bs, s: t.s, t: t.t, w: t.w, i: t.i, a: t.a, ld: t.ld, cl: t.cl, wil: t.wil, int: t.int_stat })
+    setCost(Number(t.cost))
+    setStats({
+      m:   Number(t.m),
+      ws:  Number(t.ws),
+      bs:  Number(t.bs),
+      s:   Number(t.s),
+      t:   Number(t.t),
+      w:   Number(t.w),
+      i:   Number(t.i),
+      a:   Number(t.a),
+      ld:  Number(t.ld),
+      cl:  Number(t.cl),
+      wil: Number(t.wil),
+      int: Number(t.int_stat),
+    })
   }
 
   const handleStatChange = (key: keyof FighterStats, val: number) => {
