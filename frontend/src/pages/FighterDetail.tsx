@@ -37,6 +37,13 @@ export default function FighterDetail() {
 
   useEffect(() => { fetchFighter(fighterId) }, [fighterId, fetchFighter, refresh])
 
+  useEffect(() => {
+    if (currentFighter) {
+      setWoundChecks(Array(currentFighter.w).fill(false))
+      setFleshWoundChecks(Array(currentFighter.t).fill(false))
+    }
+  }, [currentFighter?.id])
+
   if (loading && !currentFighter) return <div className="text-dark-400 font-mono animate-pulse">Loading fighter…</div>
   if (error)   return <div className="text-blood-500">{error}</div>
   if (!currentFighter) return null
