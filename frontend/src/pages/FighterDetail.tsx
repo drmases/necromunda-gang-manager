@@ -63,12 +63,8 @@ export default function FighterDetail() {
       const gt = res.data.type
       setGangType(gt)
       weaponLibraryApi.list({ faction: gt }).then(r => setWeaponLibrary(Array.isArray(r.data) ? r.data : []))
-      const fighterTypeLower = currentFighter.type.toLowerCase()
-      const roleKeyword = fighterTypeLower.includes('leader') ? 'Leader'
-        : fighterTypeLower.includes('champion') || fighterTypeLower.includes('primus') || fighterTypeLower.includes('acolyte') ? 'Champion'
-        : fighterTypeLower.includes('ganger') || fighterTypeLower.includes('neophyte') || fighterTypeLower.includes('hybrid') ? 'Ganger'
-        : fighterTypeLower.includes('juve') || fighterTypeLower.includes('prospect') ? 'Juve'
-        : ''
+      const roleMatch = currentFighter.type.match(/\(([^)]+)\)$/)
+      const roleKeyword = roleMatch ? roleMatch[1] : ''
       skillLibraryApi.list({ faction: gt, role: roleKeyword }).then(r => setSkillLibrary(Array.isArray(r.data) ? r.data : []))
     }).catch(() => {})
   }, [currentFighter?.gang_id])
