@@ -37,6 +37,16 @@ export default function FighterDetail() {
   const [gangType, setGangType]         = useState<string | null>(null)
   const [weaponLibrary, setWeaponLibrary] = useState<WeaponLibraryEntry[]>([])
 
+  const WEAPON_CATS = ['Pistol','Basic Weapon','Close Combat Weapon','Heavy Weapon','Power/Shock Weapon','Special Weapon','Two-Handed Weapon']
+  const ARMOUR_CATS = ['Armour']
+  const WARGEAR_CATS = ['Grenade','Booby Trap','Exotic Beast']
+  const EQUIP_CATS  = ['Personal Equipment']
+
+  const libWeapons  = weaponLibrary.filter(w => WEAPON_CATS.includes(w.category))
+  const libArmour   = weaponLibrary.filter(w => ARMOUR_CATS.includes(w.category))
+  const libWargear  = weaponLibrary.filter(w => WARGEAR_CATS.includes(w.category))
+  const libEquip    = weaponLibrary.filter(w => EQUIP_CATS.includes(w.category))
+
   useEffect(() => { fetchFighter(fighterId) }, [fighterId, fetchFighter, refresh])
 
   useEffect(() => {
@@ -355,11 +365,11 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addWeapon} className="flex gap-2">
-          {weaponLibrary.length > 0 ? (
+          {libWeapons.length > 0 ? (
             <select
               value=""
               onChange={e => {
-                const w = weaponLibrary.find(w => String(w.id) === e.target.value)
+                const w = libWeapons.find(w => String(w.id) === e.target.value)
                 if (!w) return
                 setWeaponName(w.name)
                 setWeaponCost(w.cost)
@@ -370,17 +380,16 @@ export default function FighterDetail() {
                   w.dmg !== '-' ? `Dmg ${w.dmg}` : '',
                   w.ammo !== '-' ? `Ammo ${w.ammo}` : '',
                   w.traits || '',
-                ].filter(Boolean).join(', ')}
-              }
+                ].filter(Boolean).join(', ')
+                setWeaponNotes(notes)
+              }}
               className="input-sm flex-1"
             >
               <option value="">{weaponName || '— Select weapon —'}</option>
-              {Array.from(new Set(weaponLibrary.map(w => w.category))).map(cat => (
+              {Array.from(new Set(libWeapons.map(w => w.category))).map(cat => (
                 <optgroup key={cat} label={cat}>
-                  {weaponLibrary.filter(w => w.category === cat).map(w => (
-                    <option key={w.id} value={w.id}>
-                      {w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}
-                    </option>
+                  {libWeapons.filter(w => w.category === cat).map(w => (
+                    <option key={w.id} value={w.id}>{w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}</option>
                   ))}
                 </optgroup>
               ))}
@@ -411,7 +420,26 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addArmour} className="flex gap-2">
-          <input value={armourName} onChange={e => setArmourName(e.target.value)} placeholder="Armour name" className="input-sm flex-1" />
+          {libArmour.length > 0 ? (
+            <select
+              value=""
+              onChange={e => {
+                const w = libArmour.find(w => String(w.id) === e.target.value)
+                if (!w) return
+                setArmourName(w.name)
+                setArmourCost(w.cost)
+                setArmourNotes(w.traits || '')
+              }}
+              className="input-sm flex-1"
+            >
+              <option value="">{armourName || '— Select armour —'}</option>
+              {libArmour.map(w => (
+                <option key={w.id} value={w.id}>{w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}</option>
+              ))}
+            </select>
+          ) : (
+            <input value={armourName} onChange={e => setArmourName(e.target.value)} placeholder="Armour name" className="input-sm flex-1" />
+          )}
           <input type="number" min={0} value={armourCost} onChange={e => setArmourCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
           <input value={armourNotes} onChange={e => setArmourNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
@@ -435,22 +463,44 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addWargear} className="flex gap-2">
-          <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
+          {libWargear.length > 0 ? (
+            <select
+              value=""
+              onChange={e => {
+                const w = libWargear.find(w => String(w.id) === e.target.value)
+                if (!w) return
+                setWargearName(w.name)
+                setWargearCost(w.cost)
+                setWargearNotes(w.traits || '')
+              }}
+              className="input-sm flex-1"
+            >
+              <option value="">{wargearName || '— Select wargear —'}</option>
+              {Array.from(new Set(libWargear.map(w => w.category))).map(cat => (
+                <optgroup key={cat} label={cat}>
+                  {libWargear.filter(w => w.category === cat).map(w => (
+                    <option key={w.id} value={w.id}>{w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+          ) : (
+            <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
+          )}
           <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
           <input value={wargearNotes} onChange={e => setWargearNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>
 
-      {/* Equipment */}
-      <Section title="Equipment">
+      {/* Personal Equipment */}
+      <Section title="Personal Equipment">
         {(f.equipment ?? []).length > 0 && (
           <div className="space-y-1 mb-3">
             {(f.equipment ?? []).map((eq: Equipment) => (
               <div key={eq.id} className="flex justify-between items-center text-sm border border-dark-700 bg-dark-800 rounded px-3 py-1.5">
                 <span>
                   <span className="text-dark-100">{eq.name}</span>
-                  <span className="text-dark-400 text-xs ml-2">[{eq.type}]</span>
                   {eq.cost > 0 && <span className="text-dark-400 text-xs ml-2">💰{eq.cost}</span>}
                 </span>
                 <button onClick={() => removeEquipment(eq.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
@@ -459,12 +509,25 @@ export default function FighterDetail() {
           </div>
         )}
         <form onSubmit={addEquipment} className="flex gap-2">
-          <input value={equipName} onChange={e => setEquipName(e.target.value)} placeholder="Item name" className="input-sm flex-1" />
-          <select value={equipType} onChange={e => setEquipType(e.target.value as EquipmentType)} className="input-sm w-28">
-            <option value="weapon">Weapon</option>
-            <option value="armour">Armour</option>
-            <option value="equipment">Equipment</option>
-          </select>
+          {libEquip.length > 0 ? (
+            <select
+              value=""
+              onChange={e => {
+                const w = libEquip.find(w => String(w.id) === e.target.value)
+                if (!w) return
+                setEquipName(w.name)
+                setEquipCost(w.cost)
+              }}
+              className="input-sm flex-1"
+            >
+              <option value="">{equipName || '— Select equipment —'}</option>
+              {libEquip.map(w => (
+                <option key={w.id} value={w.id}>{w.name}{w.cost > 0 ? ` (${w.cost} cr)` : ''}</option>
+              ))}
+            </select>
+          ) : (
+            <input value={equipName} onChange={e => setEquipName(e.target.value)} placeholder="Item name" className="input-sm flex-1" />
+          )}
           <input type="number" min={0} value={equipCost} onChange={e => setEquipCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
