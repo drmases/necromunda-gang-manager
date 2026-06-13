@@ -28,6 +28,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               Templates
             </Link>
+            <Link
+              to="/weapons"
+              className={`hover:text-gold-400 transition-colors ${location.pathname === '/weapons' ? 'text-gold-500' : 'text-dark-300'}`}
+            >
+              Weapons
+            </Link>
           </nav>
         </div>
       </header>

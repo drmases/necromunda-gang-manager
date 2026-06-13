@@ -118,6 +118,23 @@ function initTables(PDO $pdo): void {
             FOREIGN KEY (fighter_id) REFERENCES fighters(id) ON DELETE CASCADE
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+        CREATE TABLE IF NOT EXISTS weapon_library (
+            id        INT AUTO_INCREMENT PRIMARY KEY,
+            gang_type VARCHAR(50)  NOT NULL,
+            name      VARCHAR(100) NOT NULL,
+            cost      INT          NOT NULL DEFAULT 0,
+            range_s   VARCHAR(10)  NOT NULL DEFAULT '-',
+            range_l   VARCHAR(10)  NOT NULL DEFAULT '-',
+            hit_s     VARCHAR(10)  NOT NULL DEFAULT '-',
+            hit_l     VARCHAR(10)  NOT NULL DEFAULT '-',
+            str       VARCHAR(10)  NOT NULL DEFAULT '-',
+            ap        VARCHAR(10)  NOT NULL DEFAULT '-',
+            dmg       VARCHAR(10)  NOT NULL DEFAULT '1',
+            ammo      VARCHAR(10)  NOT NULL DEFAULT '-',
+            traits    VARCHAR(255) NOT NULL DEFAULT '',
+            sort_order INT         NOT NULL DEFAULT 0
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
         CREATE TABLE IF NOT EXISTS fighter_templates (
             id         INT AUTO_INCREMENT PRIMARY KEY,
             gang_type  VARCHAR(50)  NOT NULL,

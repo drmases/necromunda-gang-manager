@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useStore } from '../store'
 import StatBlock from '../components/StatBlock'
-import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule } from '../types'
-import { fighterApi } from '../api'
+import type { FighterStats, Skill, Injury, Equipment, EquipmentType, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry } from '../types'
+import { fighterApi, gangApi, weaponLibraryApi } from '../api'
 
 export default function FighterDetail() {
   const { id } = useParams<{ id: string }>()
@@ -34,6 +34,8 @@ export default function FighterDetail() {
   const [ruleName, setRuleName]         = useState('')
   const [ruleDesc, setRuleDesc]         = useState('')
   const [refresh, setRefresh]           = useState(0)
+  const [gangType, setGangType]         = useState<string | null>(null)
+  const [weaponLibrary, setWeaponLibrary] = useState<WeaponLibraryEntry[]>([])
 
   useEffect(() => { fetchFighter(fighterId) }, [fighterId, fetchFighter, refresh])
 
@@ -43,6 +45,15 @@ export default function FighterDetail() {
       setFleshWoundChecks(Array(currentFighter.t).fill(false))
     }
   }, [currentFighter?.id])
+
+  useEffect(() => {
+    if (!currentFighter) return
+    gangApi.get(currentFighter.gang_id).then(res => {
+      const gt = res.data.type
+      setGangType(gt)
+      weaponLibraryApi.list(gt).then(r => setWeaponLibrary(Array.isArray(r.data) ? r.data : []))
+    }).catch(() => {})
+  }, [currentFighter?.gang_id])
 
   if (loading && !currentFighter) return <div className="text-dark-400 font-mono animate-pulse">Loading fighter…</div>
   if (error)   return <div className="text-blood-500">{error}</div>
@@ -341,6 +352,28 @@ export default function FighterDetail() {
                 <button onClick={() => removeWeapon(wp.id)} className="text-dark-500 hover:text-blood-500 transition-colors text-xs">✕</button>
               </div>
             ))}
+          </div>
+        )}
+        {weaponLibrary.length > 0 && (
+          <div className="mb-3">
+            <div className="text-xs text-dark-400 mb-1.5">Quick-pick from {gangType} library:</div>
+            <div className="flex flex-wrap gap-1">
+              {weaponLibrary.map(w => (
+                <button
+                  key={w.id}
+                  type="button"
+                  onClick={() => {
+                    setWeaponName(w.name)
+                    setWeaponCost(w.cost)
+                    const notes = `Str ${w.str}, AP ${w.ap}, Dmg ${w.dmg}, Ammo ${w.ammo}${w.traits ? ', ' + w.traits : ''}`
+                    setWeaponNotes(notes)
+                  }}
+                  className="px-2 py-1 text-xs bg-dark-700 border border-dark-600 text-dark-200 hover:border-gold-600 hover:text-gold-400 rounded transition-colors font-mono"
+                >
+                  {w.name} {w.cost > 0 ? `(${w.cost})` : ''}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         <form onSubmit={addWeapon} className="flex gap-2">

@@ -78,6 +78,23 @@ export interface SpecialRule {
   description: string
 }
 
+export interface WeaponLibraryEntry {
+  id: number
+  gang_type: string
+  name: string
+  cost: number
+  range_s: string
+  range_l: string
+  hit_s: string
+  hit_l: string
+  str: string
+  ap: string
+  dmg: string
+  ammo: string
+  traits: string
+  sort_order: number
+}
+
 export interface Fighter extends FighterStats {
   id: number
   gang_id: number

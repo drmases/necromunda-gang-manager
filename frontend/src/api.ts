@@ -1,5 +1,5 @@
 import axios from 'axios'
-import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule } from './types'
+import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry } from './types'
 
 const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
 
@@ -26,6 +26,14 @@ export const fighterTemplatesApi = {
   create: (data: Partial<FighterTemplate>) => api.post<FighterTemplate>('/fighter_templates.php', data),
   update: (id: number, data: Partial<FighterTemplate>) => api.put<FighterTemplate>(`/fighter_templates.php?id=${id}`, data),
   delete: (id: number) => api.delete(`/fighter_templates.php?id=${id}`),
+}
+
+export const weaponLibraryApi = {
+  list:   (gangType?: string) =>
+    api.get<WeaponLibraryEntry[]>('/weapon_library.php' + (gangType ? `?gang_type=${encodeURIComponent(gangType)}` : '')),
+  create: (data: Partial<WeaponLibraryEntry>) => api.post<WeaponLibraryEntry>('/weapon_library.php', data),
+  update: (id: number, data: Partial<WeaponLibraryEntry>) => api.put<WeaponLibraryEntry>(`/weapon_library.php?id=${id}`, data),
+  delete: (id: number) => api.delete(`/weapon_library.php?id=${id}`),
 }
 
 export const fighterApi = {
