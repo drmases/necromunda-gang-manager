@@ -44,7 +44,7 @@ export default function WeaponLibrary() {
     ? weapons.filter(w => !w.factions || w.factions === '')
     : filterGang === 'Universal'
     ? weapons.filter(w => w.gang_type === 'Universal')
-    : weapons.filter(w => w.factions.split(',').map(f => f.trim()).includes(filterGang))
+    : weapons.filter(w => (w.factions || '').split(',').map(f => f.trim()).includes(filterGang))
 
   // Group by category
   const grouped = filtered.reduce<Record<string, WeaponLibraryEntry[]>>((acc, w) => {
