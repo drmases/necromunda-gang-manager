@@ -10,9 +10,9 @@ $db = getDb();
 $templates = [
     ['Cult Adept (Leader)',       120, 5, 4, 4, 3, 3, 2, 3, 1, 3, 5, 5, 4, 10],
     ['Cult Alpha (Leader)',       145, 5, 3, 3, 3, 3, 2, 3, 2, 3, 5, 5, 4, 20],
-    ['Hybrid Acolyte (Champion)',  85, 5, 3, 4, 3, 3, 1, 4, 2, 8, 7, 8, 8, 30],
-    ['Aberrant (Ganger)',          75, 4, 3, 6, 5, 4, 2, 4, 2, 8, 6, 6, 9, 40],
-    ['Neophyte Hybrid (Ganger)',   35, 5, 4, 4, 3, 3, 1, 4, 1, 8, 7, 8, 8, 50],
+    ['Hybrid Acolyte (Champion)',  85, 5, 3, 3, 3, 3, 1, 3, 1, 4, 4, 7, 5, 30],
+    ['Aberrant (Ganger)',          95, 5, 3, 6, 5, 4, 2, 5, 2, 9, 4, 6, 10, 40],
+    ['Neophyte Hybrid (Ganger)',   45, 4, 4, 4, 3, 3, 1, 4, 1, 7, 5, 6, 8, 50],
 ];
 
 $check  = $db->prepare("SELECT id FROM fighter_templates WHERE gang_type = 'Genestealer Cult' AND name = ? LIMIT 1");

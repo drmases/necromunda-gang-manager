@@ -9,8 +9,11 @@ $db = getDb();
 // [name, cost, m, ws, bs, s, t, w, i, a, ld, cl, wil, int_stat]
 // Stats with "+" are stored as the number only (e.g. WS4+ → 4)
 $updates = [
-    ['Cult Adept (Leader)',  120, 5, 4, 4, 3, 3, 2, 3, 1, 3, 5, 5, 4],
-    ['Cult Alpha (Leader)',  145, 5, 3, 3, 3, 3, 2, 3, 2, 3, 5, 5, 4],
+    ['Cult Adept (Leader)',       120, 5, 4, 4, 3, 3, 2, 3, 1, 3, 5, 5, 4],
+    ['Cult Alpha (Leader)',       145, 5, 3, 3, 3, 3, 2, 3, 2, 3, 5, 5, 4],
+    ['Hybrid Acolyte (Champion)',  85, 5, 3, 3, 3, 3, 1, 3, 1, 4, 4, 7, 5],
+    ['Aberrant (Ganger)',          95, 5, 3, 6, 5, 4, 2, 5, 2, 9, 4, 6, 10],
+    ['Neophyte Hybrid (Ganger)',   45, 4, 4, 4, 3, 3, 1, 4, 1, 7, 5, 6, 8],
 ];
 
 $stmt = $db->prepare("
