@@ -1,6 +1,6 @@
 import type { FighterStats } from '../types'
 
-const STAT_LABELS = ['M"', 'WS+', 'BS+', 'S', 'T', 'W', 'I+', 'A', 'Ld+', 'Cl+', 'Wil+', 'Int+']
+const STAT_LABELS = ['M', 'WS', 'BS', 'S', 'T', 'W', 'I', 'A', 'Ld', 'Cl', 'Wil', 'Int']
 const STAT_KEYS: (keyof FighterStats)[] = ['m', 'ws', 'bs', 's', 't', 'w', 'i', 'a', 'ld', 'cl', 'wil', 'int']
 
 interface Props {
@@ -40,7 +40,7 @@ export default function StatBlock({ stats, editable, onChange, redStats = [] }: 
                     />
                   ) : (
                     <span className={isRed ? 'text-red-500 font-bold' : 'text-dark-100'}>
-                      {stats[key]}
+                      {stats[key]}{key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''}
                     </span>
                   )}
                 </td>

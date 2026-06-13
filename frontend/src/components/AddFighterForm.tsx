@@ -4,7 +4,7 @@ import { DEFAULT_STATS } from '../types'
 import { fighterTemplatesApi } from '../api'
 
 const STAT_KEYS: (keyof FighterStats)[] = ['m', 'ws', 'bs', 's', 't', 'w', 'i', 'a', 'ld', 'cl', 'wil', 'int']
-const STAT_LABELS = ['M"', 'WS+', 'BS+', 'S', 'T', 'W', 'I+', 'A', 'Ld+', 'Cl+', 'Wil+', 'Int+']
+const STAT_LABELS = ['M', 'WS', 'BS', 'S', 'T', 'W', 'I', 'A', 'Ld', 'Cl', 'Wil', 'Int']
 
 interface Props {
   gangType: string
@@ -119,17 +119,22 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
           {STAT_LABELS.map(l => (
             <div key={l} className="text-center text-xs text-gold-600 font-display">{l}</div>
           ))}
-          {STAT_KEYS.map(key => (
-            <input
-              key={key}
-              type="number"
-              min={1}
-              max={20}
-              value={stats[key]}
-              onChange={e => handleStatChange(key, Number(e.target.value))}
-              className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-1 py-1 text-xs text-center focus:outline-none focus:border-gold-600 font-mono"
-            />
-          ))}
+          {STAT_KEYS.map(key => {
+            const suffix = key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int'].includes(key) ? '+' : ''
+            return (
+              <div key={key} className="flex items-center justify-center gap-0.5">
+                <input
+                  type="number"
+                  min={1}
+                  max={20}
+                  value={stats[key]}
+                  onChange={e => handleStatChange(key, Number(e.target.value))}
+                  className="w-8 bg-dark-700 border border-dark-600 text-dark-100 rounded px-1 py-1 text-xs text-center focus:outline-none focus:border-gold-600 font-mono"
+                />
+                {suffix && <span className="text-xs text-dark-400">{suffix}</span>}
+              </div>
+            )
+          })}
         </div>
         </div>
       </div>

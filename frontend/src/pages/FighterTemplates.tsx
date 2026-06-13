@@ -8,7 +8,7 @@ const GANG_TYPES: GangType[] = [
 ]
 
 const STAT_KEYS = ['m','ws','bs','s','t','w','i','a','ld','cl','wil','int_stat'] as const
-const STAT_LABELS = ['M"','WS+','BS+','S','T','W','I+','A','Ld+','Cl+','Wil+','Int+']
+const STAT_LABELS = ['M', 'WS', 'BS', 'S', 'T', 'W', 'I', 'A', 'Ld', 'Cl', 'Wil', 'Int']
 
 type StatKey = typeof STAT_KEYS[number]
 
@@ -238,7 +238,7 @@ export default function FighterTemplates() {
                   <div key={l} className="text-center text-xs text-gold-700 font-display">{l}</div>
                 ))}
                 {STAT_KEYS.map(key => (
-                  <div key={key} className="text-center text-xs font-mono text-dark-200">{t[key as StatKey]}</div>
+                  <div key={key} className="text-center text-xs font-mono text-dark-200">{t[key as StatKey]}{key === 'm' ? '"' : ['ws','bs','i','ld','cl','wil','int_stat'].includes(key) ? '+' : ''}</div>
                 ))}
               </div>
             </div>
