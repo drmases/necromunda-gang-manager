@@ -354,8 +354,8 @@ export default function FighterDetail() {
             ))}
           </div>
         )}
-        {weaponLibrary.length > 0 && (
-          <div className="mb-3">
+        <form onSubmit={addWeapon} className="flex gap-2">
+          {weaponLibrary.length > 0 ? (
             <select
               value=""
               onChange={e => {
@@ -370,12 +370,11 @@ export default function FighterDetail() {
                   w.dmg !== '-' ? `Dmg ${w.dmg}` : '',
                   w.ammo !== '-' ? `Ammo ${w.ammo}` : '',
                   w.traits || '',
-                ].filter(Boolean).join(', ')
-                setWeaponNotes(notes)
-              }}
-              className="w-full bg-dark-700 border border-dark-600 text-dark-100 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-gold-600"
+                ].filter(Boolean).join(', ')}
+              }
+              className="input-sm flex-1"
             >
-              <option value="">— Pick from {gangType} equipment list —</option>
+              <option value="">{weaponName || '— Select weapon —'}</option>
               {Array.from(new Set(weaponLibrary.map(w => w.category))).map(cat => (
                 <optgroup key={cat} label={cat}>
                   {weaponLibrary.filter(w => w.category === cat).map(w => (
@@ -386,10 +385,9 @@ export default function FighterDetail() {
                 </optgroup>
               ))}
             </select>
-          </div>
-        )}
-        <form onSubmit={addWeapon} className="flex gap-2">
-          <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
+          ) : (
+            <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
+          )}
           <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
           <input value={weaponNotes} onChange={e => setWeaponNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
