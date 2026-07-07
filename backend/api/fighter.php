@@ -201,11 +201,12 @@ if ($method === 'PUT') {
         'name','type','cost','experience','kills','advancement_count',
         'in_recovery','dead','m','ws','bs','s','t','w','i','a','ld','cl','wil',
     ];
+    $boolFields = ['in_recovery', 'dead'];
     $sets = []; $params = [];
     foreach ($allowed as $field) {
         if (array_key_exists($field, $body)) {
             $sets[]   = "$field = ?";
-            $params[] = $body[$field];
+            $params[] = in_array($field, $boolFields, true) ? (int)$body[$field] : $body[$field];
         }
     }
     if (array_key_exists('int', $body)) {

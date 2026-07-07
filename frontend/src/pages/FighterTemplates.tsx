@@ -15,7 +15,7 @@ type StatKey = typeof STAT_KEYS[number]
 const EMPTY: Omit<FighterTemplate, 'id'> = {
   gang_type: 'Genestealer Cult', name: '', cost: 0,
   m:5, ws:4, bs:4, s:3, t:3, w:1, i:4, a:1, ld:6, cl:7, wil:7, int_stat:7,
-  sort_order: 0, notes: '',
+  sort_order: 0, notes: '', special_rules: '',
 }
 
 export default function FighterTemplates() {

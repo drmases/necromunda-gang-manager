@@ -18,7 +18,7 @@ export default function FighterDetail() {
   const [injuryName, setInjuryName]     = useState('')
   const [injuryPerm, setInjuryPerm]     = useState(false)
   const [equipName, setEquipName]       = useState('')
-  const [equipType, setEquipType]       = useState<EquipmentType>('weapon')
+  const [equipType]                     = useState<EquipmentType>('weapon')
   const [equipCost, setEquipCost]       = useState(0)
   const [weaponName, setWeaponName]     = useState('')
   const [weaponCost, setWeaponCost]     = useState(0)
@@ -34,7 +34,7 @@ export default function FighterDetail() {
   const [ruleName, setRuleName]         = useState('')
   const [ruleDesc, setRuleDesc]         = useState('')
   const [refresh, setRefresh]           = useState(0)
-  const [gangType, setGangType]         = useState<string | null>(null)
+  const [_gangType, setGangType]        = useState<string | null>(null)
   const [weaponLibrary, setWeaponLibrary] = useState<WeaponLibraryEntry[]>([])
   const [skillLibrary, setSkillLibrary] = useState<SkillLibraryEntry[]>([])
   const [injuryLibrary, setInjuryLibrary] = useState<InjuryLibraryEntry[]>([])
@@ -82,6 +82,7 @@ export default function FighterDetail() {
 
   const startEdit = () => {
     setEditState({
+      name: f.name,
       experience: f.experience,
       kills: f.kills,
       advancement_count: f.advancement_count,
@@ -233,7 +234,15 @@ export default function FighterDetail() {
 
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">{f.name}</h1>
+          {editing ? (
+            <input
+              value={editState.name}
+              onChange={e => setEditState((s: any) => ({ ...s, name: e.target.value }))}
+              className="font-display text-2xl text-gold-500 tracking-widest uppercase bg-transparent border-b border-dark-600 focus:outline-none focus:border-gold-600 w-full"
+            />
+          ) : (
+            <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">{f.name}</h1>
+          )}
           <div className="text-sm text-dark-300 mt-0.5">{f.type}</div>
           <div className="flex gap-2 mt-2">
             {f.dead        && <span className="text-xs bg-blood-600 text-dark-100 px-2 py-0.5 rounded font-mono">DEAD</span>}
