@@ -21,6 +21,16 @@ jobs:
           npm ci
           npm run build
 
+      - name: Debug SFTP path
+        run: |
+          sudo apt-get install -y sshpass > /dev/null
+          echo "--- pwd ---"
+          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' pwd
+          echo "--- ls -la (home) ---"
+          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' ls -la
+          echo "--- find necromunda* (depth 4) ---"
+          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' find . -maxdepth 4 -iname 'necromunda*'
+
       - name: Deploy frontend
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
