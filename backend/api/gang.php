@@ -15,7 +15,21 @@ if ($method === 'GET') {
 
     $fighters = $db->prepare('SELECT * FROM fighters WHERE gang_id = ? ORDER BY type, name');
     $fighters->execute([$id]);
-    $row['fighters'] = $fighters->fetchAll();
+    $fList = $fighters->fetchAll();
+
+    $gearCost = $db->prepare(
+        'SELECT
+            COALESCE((SELECT SUM(cost) FROM fighter_weapons WHERE fighter_id = ?), 0) +
+            COALESCE((SELECT SUM(cost) FROM fighter_armour  WHERE fighter_id = ?), 0) +
+            COALESCE((SELECT SUM(cost) FROM fighter_wargear WHERE fighter_id = ?), 0) +
+            COALESCE((SELECT SUM(cost) FROM equipment       WHERE fighter_id = ?), 0)'
+    );
+    foreach ($fList as &$fRow) {
+        $gearCost->execute([$fRow['id'], $fRow['id'], $fRow['id'], $fRow['id']]);
+        $fRow['cost'] = (int)$fRow['cost'] + (int)$gearCost->fetchColumn();
+    }
+    unset($fRow);
+    $row['fighters'] = $fList;
 
     jsonResponse($row);
 }

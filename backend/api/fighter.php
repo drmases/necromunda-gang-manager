@@ -188,6 +188,8 @@ if ($method === 'GET') {
     foreach ($srList as &$sr) { $sr['id'] = (int)$sr['id']; }
     $fighter['special_rules'] = $srList;
 
+    $fighter['cost'] = (int)$fighter['cost'] + sumCost($ws) + sumCost($arList) + sumCost($wgList) + sumCost($eqs);
+
     jsonResponse($fighter);
 }
 
@@ -261,6 +263,8 @@ if ($method === 'PUT') {
     $srList2 = $srs2->fetchAll();
     foreach ($srList2 as &$sr2) { $sr2['id'] = (int)$sr2['id']; }
     $fighter['special_rules'] = $srList2;
+
+    $fighter['cost'] = (int)$fighter['cost'] + sumCost($ws2) + sumCost($arList2) + sumCost($wgList2) + sumCost($eqs);
 
     jsonResponse($fighter);
 }

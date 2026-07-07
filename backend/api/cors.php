@@ -25,3 +25,7 @@ function getBody(): array {
     $data = json_decode($raw, true);
     return is_array($data) ? $data : [];
 }
+
+function sumCost(array $rows): int {
+    return array_sum(array_column($rows, 'cost'));
+}
