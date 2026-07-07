@@ -97,7 +97,7 @@ export default function NewGang() {
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 px-5 py-2.5 text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-bold rounded transition-colors disabled:opacity-50 font-display tracking-wider"
+            className="flex-1 px-5 py-2.5 text-sm bg-gold-600 hover:bg-gold-500 text-black font-bold rounded transition-colors disabled:opacity-50 font-display tracking-wider"
           >
             {saving ? 'Founding…' : 'Found Gang'}
           </button>

@@ -113,7 +113,7 @@ export default function SkillLibrary() {
         <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">Skill Library</h1>
         <button
           onClick={startCreate}
-          className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold text-sm rounded transition-colors"
+          className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-black font-semibold text-sm rounded transition-colors"
         >
           + New Skill
         </button>
@@ -239,7 +239,7 @@ export default function SkillLibrary() {
             <button
               onClick={save}
               disabled={saving || !form.name.trim()}
-              className="px-4 py-1.5 text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold rounded transition-colors disabled:opacity-50"
+              className="px-4 py-1.5 text-sm bg-gold-600 hover:bg-gold-500 text-black font-semibold rounded transition-colors disabled:opacity-50"
             >
               {saving ? 'Saving…' : 'Save'}
             </button>

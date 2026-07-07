@@ -150,7 +150,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
         <button
           type="submit"
           disabled={saving}
-          className="px-4 py-1.5 text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold rounded transition-colors disabled:opacity-50"
+          className="px-4 py-1.5 text-sm bg-gold-600 hover:bg-gold-500 text-black font-semibold rounded transition-colors disabled:opacity-50"
         >
           {saving ? 'Adding…' : 'Add Fighter'}
         </button>

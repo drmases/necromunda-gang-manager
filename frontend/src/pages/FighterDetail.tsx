@@ -244,7 +244,7 @@ export default function FighterDetail() {
           {editing ? (
             <>
               <button onClick={() => setEditing(false)} className="text-sm text-dark-400 hover:text-dark-100 px-3 py-1.5 border border-dark-700 rounded transition-colors">Cancel</button>
-              <button onClick={saveEdit} className="text-sm bg-gold-600 hover:bg-gold-500 text-dark-900 font-bold px-4 py-1.5 rounded transition-colors">Save</button>
+              <button onClick={saveEdit} className="text-sm bg-gold-600 hover:bg-gold-500 text-black font-bold px-4 py-1.5 rounded transition-colors">Save</button>
             </>
           ) : (
             <button onClick={startEdit} className="text-sm border border-gold-700 text-gold-500 hover:bg-gold-900/30 px-4 py-1.5 rounded transition-colors">Edit</button>
@@ -304,7 +304,7 @@ export default function FighterDetail() {
 
       {/* Battle tracker */}
       {!editing && (
-        <div className="mb-6 border border-dark-700 bg-dark-900/50 rounded p-3">
+        <div className="mb-6 border border-dark-700 bg-dark-700/60 rounded p-3">
           <div className="flex items-center gap-2 mb-3">
             <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest">Battle Tracker</h2>
             <button
@@ -656,7 +656,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div className="mb-6">
       <h2 className="font-display text-xs text-gold-600 uppercase tracking-widest mb-2">{title}</h2>
-      <div className="border border-dark-700 bg-dark-900/50 rounded p-3">{children}</div>
+      <div className="border border-dark-700 bg-dark-700/60 rounded p-3">{children}</div>
     </div>
   )
 }

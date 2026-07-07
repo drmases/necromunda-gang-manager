@@ -40,7 +40,7 @@ export default function GangList() {
         <h1 className="font-display text-2xl text-gold-500 tracking-widest uppercase">Your Gangs</h1>
         <Link
           to="/gangs/new"
-          className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-dark-900 font-semibold text-sm rounded transition-colors"
+          className="px-4 py-2 bg-gold-600 hover:bg-gold-500 text-black font-semibold text-sm rounded transition-colors"
         >
           + New Gang
         </Link>

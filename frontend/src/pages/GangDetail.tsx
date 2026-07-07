@@ -107,7 +107,7 @@ export default function GangDetail() {
           <h2 className="font-display text-sm text-gold-600 uppercase tracking-widest">Roster</h2>
           <button
             onClick={() => setShowAddFighter(!showAddFighter)}
-            className="text-xs px-3 py-1.5 bg-gold-700 hover:bg-gold-600 text-dark-900 font-semibold rounded transition-colors"
+            className="text-xs px-3 py-1.5 bg-gold-700 hover:bg-gold-600 text-black font-semibold rounded transition-colors"
           >
             {showAddFighter ? 'Cancel' : '+ Add Fighter'}
           </button>

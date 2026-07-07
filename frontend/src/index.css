@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -10,8 +10,8 @@
 
 body {
   margin: 0;
-  background-color: #0a0a0a;
-  color: #e0e0e0;
+  background-color: #f8f7f3;
+  color: #242320;
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -24,10 +24,10 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #111;
+  background: #e4e1d8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c9990d;
+  background: #8f6217;
   border-radius: 3px;
 }
 
