@@ -2,16 +2,25 @@
 header('Content-Type: text/plain');
 require_once __DIR__ . '/db.php';
 
-echo "DB_HOST=" . DB_HOST . "\n";
-echo "DB_NAME=" . DB_NAME . "\n";
-echo "DB_USER=" . DB_USER . "\n";
-echo "DB_PASS length=" . strlen(DB_PASS) . "\n";
+$socket = ini_get('pdo_mysql.default_socket') ?: ini_get('mysqli.default_socket');
+echo "default_socket=" . var_export($socket, true) . "\n";
 
+echo "--- TCP host=localhost ---\n";
 try {
-    $db = getDb();
-    echo "DB connection OK\n";
-    $stmt = $db->query('SELECT 1 AS ok');
-    echo "Query OK: " . json_encode($stmt->fetchAll()) . "\n";
+    $pdo = new PDO('mysql:host=localhost;dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5]);
+    echo "SUCCESS\n";
 } catch (Throwable $e) {
-    echo "ERROR: " . get_class($e) . ": " . $e->getMessage() . "\n";
+    echo "ERROR: " . $e->getMessage() . "\n";
+}
+
+echo "--- unix_socket (from ini) ---\n";
+if ($socket) {
+    try {
+        $pdo = new PDO('mysql:unix_socket=' . $socket . ';dbname=' . DB_NAME . ';charset=utf8mb4', DB_USER, DB_PASS, [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_TIMEOUT => 5]);
+        echo "SUCCESS\n";
+    } catch (Throwable $e) {
+        echo "ERROR: " . $e->getMessage() . "\n";
+    }
+} else {
+    echo "no default socket configured\n";
 }
