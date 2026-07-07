@@ -29,6 +29,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    requireAuth();
     $body = getBody();
     $data = validateWeapon($body);
     $stmt = $db->prepare('
@@ -48,6 +49,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'PUT') {
+    requireAuth();
     if (!$id) jsonError('id required');
     $body = getBody();
     $data = validateWeapon($body);
@@ -70,6 +72,7 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
+    requireAuth();
     if (!$id) jsonError('id required');
     $stmt = $db->prepare('DELETE FROM weapon_library WHERE id = ?');
     $stmt->execute([$id]);

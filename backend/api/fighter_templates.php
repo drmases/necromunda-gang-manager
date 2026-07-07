@@ -29,6 +29,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    requireAuth();
     $body = getBody();
     $data = validateTemplate($body);
     $stmt = $db->prepare('
@@ -49,6 +50,7 @@ if ($method === 'POST') {
 }
 
 if ($method === 'PUT') {
+    requireAuth();
     if (!$id) jsonError('id required');
     $body = getBody();
     $data = validateTemplate($body);
@@ -72,6 +74,7 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
+    requireAuth();
     if (!$id) jsonError('id required');
     $stmt = $db->prepare('DELETE FROM fighter_templates WHERE id = ?');
     $stmt->execute([$id]);

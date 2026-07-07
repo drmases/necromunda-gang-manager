@@ -1,7 +1,13 @@
 import axios from 'axios'
 import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, Armour, Wargear, SpecialRule, WeaponLibraryEntry, SkillLibraryEntry, InjuryLibraryEntry } from './types'
 
-const api = axios.create({ baseURL: '/necromunda-gang-manager/api' })
+const api = axios.create({ baseURL: '/necromunda-gang-manager/api', withCredentials: true })
+
+export const authApi = {
+  status: () => api.get<{ authed: boolean }>('/auth.php'),
+  login:  (password: string) => api.post<{ authed: boolean }>('/auth.php', { password }),
+  logout: () => api.delete<{ authed: boolean }>('/auth.php'),
+}
 
 export const gangsApi = {
   list:   ()                  => api.get<Gang[]>('/gangs.php'),

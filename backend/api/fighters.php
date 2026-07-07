@@ -14,6 +14,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
+    requireAuth();
     $body = getBody();
     $name = trim($body['name'] ?? '');
     $type = trim($body['type'] ?? '');

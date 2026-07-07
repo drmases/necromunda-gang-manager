@@ -35,6 +35,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'PUT') {
+    requireAuth();
     $body  = getBody();
     $check = $db->prepare('SELECT id FROM gangs WHERE id = ?');
     $check->execute([$id]);
@@ -58,6 +59,7 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
+    requireAuth();
     $db->prepare('DELETE FROM gangs WHERE id = ?')->execute([$id]);
     jsonResponse(['deleted' => true]);
 }

@@ -1,7 +1,9 @@
 import { Link, useLocation } from 'react-router-dom'
+import { useAuth } from '../AuthContext'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
+  const { authed, logout } = useAuth()
   return (
     <div className="min-h-screen bg-dark-900 text-dark-100">
       <header className="border-b border-gold-800 bg-dark-800">
@@ -46,6 +48,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               Injuries
             </Link>
+            {authed ? (
+              <button onClick={logout} className="text-dark-300 hover:text-blood-500 transition-colors">Logga ut</button>
+            ) : (
+              <Link
+                to="/login"
+                className={`hover:text-gold-400 transition-colors ${location.pathname === '/login' ? 'text-gold-500' : 'text-dark-300'}`}
+              >
+                Logga in
+              </Link>
+            )}
           </nav>
         </div>
       </header>

@@ -1,10 +1,5 @@
 <?php
-// Configure these for your one.com MySQL credentials
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'c2s4tpyp0_globbin_se');
-define('DB_USER', 'c2s4tpyp0_globbin_se');
-define('DB_PASS', 'sftpglobbin1313');
-define('DB_CHARSET', 'utf8mb4');
+require_once __DIR__ . '/config.local.php';
 
 function getDb(): PDO {
     static $pdo = null;

@@ -9,7 +9,11 @@ $action = $_GET['action'] ?? '';
 
 if ($id <= 0) jsonError('Invalid fighter id');
 
-// ── Sub-resource routes ──────────────────────────────────────────────────────
+// ── Sub-resource routes (all mutating) ───────────────────────────────────────
+
+if ($action !== '') {
+    requireAuth();
+}
 
 if ($action === 'skill') {
     if ($method === 'POST') {
@@ -194,6 +198,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'PUT') {
+    requireAuth();
     $body  = getBody();
     $check = $db->prepare('SELECT id FROM fighters WHERE id = ?');
     $check->execute([$id]);
@@ -270,6 +275,7 @@ if ($method === 'PUT') {
 }
 
 if ($method === 'DELETE') {
+    requireAuth();
     $db->prepare('DELETE FROM fighters WHERE id = ?')->execute([$id]);
     jsonResponse(['deleted' => true]);
 }

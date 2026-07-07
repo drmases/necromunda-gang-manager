@@ -9,6 +9,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+function requireAuth(): void {
+    if (empty($_SESSION['authed'])) {
+        jsonError('Unauthorized', 401);
+    }
+}
+
 function jsonResponse(mixed $data, int $code = 200): void {
     http_response_code($code);
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
