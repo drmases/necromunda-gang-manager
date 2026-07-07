@@ -75,6 +75,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
           </label>
           <select
             value={fighterRole}
+            required
             onChange={e => {
               const t = templates.find(t => t.name === e.target.value)
               if (t) applyTemplate(t)
