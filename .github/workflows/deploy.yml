@@ -30,6 +30,10 @@ jobs:
           sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' ls -la
           echo "--- find necromunda* (depth 4) ---"
           sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' find . -maxdepth 4 -iname 'necromunda*'
+          echo "--- ls -la webroots ---"
+          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' ls -la webroots/
+          echo "--- find necromunda* inside webroots (depth 5) ---"
+          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' find webroots -maxdepth 5 -iname 'necromunda*'
 
       - name: Deploy frontend
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
