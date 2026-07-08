@@ -1,11 +1,17 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../AuthContext'
 
 export default function Login() {
-  const { login } = useAuth()
+  const { authed, login } = useAuth()
+  const navigate = useNavigate()
   const [password, setPassword] = useState('')
   const [error, setError] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    if (authed) navigate('/')
+  }, [authed, navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
