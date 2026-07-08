@@ -51,6 +51,9 @@ if ($method === 'POST') {
     ]);
     $newId = (int)$db->lastInsertId();
 
+    $db->prepare('UPDATE gangs SET credits = credits - ? WHERE id = ?')
+        ->execute([(int)($body['cost'] ?? 0), $gangId]);
+
     // Auto-insert special rules from template if provided
     $specialRules = $body['special_rules'] ?? [];
     if (is_array($specialRules) && count($specialRules) > 0) {

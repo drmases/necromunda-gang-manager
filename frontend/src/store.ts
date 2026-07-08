@@ -83,7 +83,13 @@ export const useStore = create<Store>((set, get) => ({
     const res = await fightersApi.create(gangId, data)
     const gang = get().currentGang
     if (gang && gang.id === gangId) {
-      set({ currentGang: { ...gang, fighters: [...(gang.fighters ?? []), res.data] } })
+      set({
+        currentGang: {
+          ...gang,
+          credits: gang.credits - (res.data.cost ?? 0),
+          fighters: [...(gang.fighters ?? []), res.data],
+        },
+      })
     }
     return res.data
   },
