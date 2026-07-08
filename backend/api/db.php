@@ -19,6 +19,11 @@ function getDb(): PDO {
             PDO::ATTR_EMULATE_PREPARES   => false,
         ]);
         initTables($pdo);
+        try {
+            $pdo->exec('ALTER TABLE gangs ADD COLUMN wealth INT NOT NULL DEFAULT 0');
+        } catch (PDOException $e) {
+            // column already exists
+        }
     }
     return $pdo;
 }

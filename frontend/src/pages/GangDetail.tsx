@@ -9,7 +9,7 @@ export default function GangDetail() {
   const gangId = Number(id)
   const { currentGang, loading, error, fetchGang, updateGang, deleteGang, createFighter, deleteFighter } = useStore()
   const [showAddFighter, setShowAddFighter] = useState(false)
-  const [editingField, setEditingField] = useState<'credits' | 'reputation' | null>(null)
+  const [editingField, setEditingField] = useState<'credits' | 'reputation' | 'wealth' | null>(null)
   const [fieldValue, setFieldValue] = useState(0)
   const navigate = useNavigate()
 
@@ -23,7 +23,7 @@ export default function GangDetail() {
   const active  = (gang.fighters ?? []).filter(f => !f.dead)
   const fallen  = (gang.fighters ?? []).filter(f => f.dead)
 
-  const startEdit = (field: 'credits' | 'reputation') => {
+  const startEdit = (field: 'credits' | 'reputation' | 'wealth') => {
     setEditingField(field)
     setFieldValue(gang[field])
   }
@@ -68,15 +68,15 @@ export default function GangDetail() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {(['credits', 'reputation'] as const).map(field => (
+      <div className="grid grid-cols-4 gap-4 mb-8">
+        {(['credits', 'reputation', 'wealth'] as const).map(field => (
           <div
             key={field}
             className="border border-dark-600 bg-dark-800 rounded p-4 cursor-pointer hover:border-gold-700 transition-colors"
             onClick={() => startEdit(field)}
           >
             <div className="text-xs text-dark-400 uppercase tracking-wider mb-1">
-              {field === 'credits' ? '💰 Treasury' : '⚡ Reputation'}
+              {field === 'credits' ? '💰 Credits' : field === 'reputation' ? '⚡ Reputation' : '👑 Wealth'}
             </div>
             {editingField === field ? (
               <div className="flex gap-2 items-center">

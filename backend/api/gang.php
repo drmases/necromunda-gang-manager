@@ -41,7 +41,7 @@ if ($method === 'PUT') {
     $check->execute([$id]);
     if (!$check->fetch()) jsonError('Gang not found', 404);
 
-    $allowed = ['name', 'type', 'credits', 'reputation'];
+    $allowed = ['name', 'type', 'credits', 'reputation', 'wealth'];
     $sets = []; $params = [];
     foreach ($allowed as $field) {
         if (array_key_exists($field, $body)) {

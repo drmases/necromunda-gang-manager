@@ -141,6 +141,7 @@ export interface Gang {
   type: GangType
   credits: number
   reputation: number
+  wealth: number
   created_at: string
   fighters?: Fighter[]
 }

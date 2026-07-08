@@ -102,7 +102,7 @@ export default function AddFighterForm({ gangType, onSubmit, onCancel }: Props) 
           />
         </div>
         <div>
-          <label className="text-xs text-dark-300 block mb-1">Cost (credits)</label>
+          <label className="text-xs text-dark-300 block mb-1">Credits</label>
           <input
             type="number"
             min={0}

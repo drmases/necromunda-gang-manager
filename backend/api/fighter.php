@@ -296,6 +296,31 @@ if ($method === 'PUT') {
 
 if ($method === 'DELETE') {
     requireAuth();
+
+    $fRow = $db->prepare('SELECT gang_id, cost FROM fighters WHERE id = ?');
+    $fRow->execute([$id]);
+    $fData = $fRow->fetch();
+
+    if ($fData) {
+        $ws3 = $db->prepare('SELECT cost FROM fighter_weapons WHERE fighter_id = ?');
+        $ws3->execute([$id]);
+        $ar3 = $db->prepare('SELECT cost FROM fighter_armour WHERE fighter_id = ?');
+        $ar3->execute([$id]);
+        $wg3 = $db->prepare('SELECT cost FROM fighter_wargear WHERE fighter_id = ?');
+        $wg3->execute([$id]);
+        $eq3 = $db->prepare('SELECT cost FROM equipment WHERE fighter_id = ?');
+        $eq3->execute([$id]);
+
+        $totalValue = (int)$fData['cost']
+            + sumCost($ws3->fetchAll())
+            + sumCost($ar3->fetchAll())
+            + sumCost($wg3->fetchAll())
+            + sumCost($eq3->fetchAll());
+
+        $db->prepare('UPDATE gangs SET credits = credits + ? WHERE id = ?')
+            ->execute([$totalValue, (int)$fData['gang_id']]);
+    }
+
     $db->prepare('DELETE FROM fighters WHERE id = ?')->execute([$id]);
     jsonResponse(['deleted' => true]);
 }

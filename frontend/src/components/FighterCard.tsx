@@ -39,7 +39,7 @@ export default function FighterCard({ fighter, onDelete }: Props) {
         </div>
       </div>
       <div className="mt-2 grid grid-cols-4 gap-1 text-xs font-mono text-dark-300">
-        <span title="Cost">💰 {fighter.cost}</span>
+        <span title="Credits">💰 {fighter.cost}</span>
         <span title="XP">⭐ {fighter.experience}</span>
         <span title="Kills">☠ {fighter.kills}</span>
         <span title="Advancements">↑ {fighter.advancement_count}</span>

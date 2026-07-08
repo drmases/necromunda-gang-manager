@@ -264,7 +264,7 @@ export default function FighterDetail() {
       {/* Quick stats */}
       <div className="grid grid-cols-4 gap-3 mb-6">
         {[
-          { label: 'Cost', icon: '💰', key: 'cost' as const },
+          { label: 'Credits', icon: '💰', key: 'cost' as const },
           { label: 'XP', icon: '⭐', key: 'experience' as const },
           { label: 'Kills', icon: '☠', key: 'kills' as const },
           { label: 'Advancements', icon: '↑', key: 'advancement_count' as const },
@@ -415,7 +415,7 @@ export default function FighterDetail() {
           ) : (
             <input value={weaponName} onChange={e => setWeaponName(e.target.value)} placeholder="Weapon name" className="input-sm flex-1" />
           )}
-          <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input type="number" min={0} value={weaponCost} onChange={e => setWeaponCost(Number(e.target.value))} placeholder="Credits" className="input-sm w-20" />
           <input value={weaponNotes} onChange={e => setWeaponNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
@@ -458,7 +458,7 @@ export default function FighterDetail() {
           ) : (
             <input value={armourName} onChange={e => setArmourName(e.target.value)} placeholder="Armour name" className="input-sm flex-1" />
           )}
-          <input type="number" min={0} value={armourCost} onChange={e => setArmourCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input type="number" min={0} value={armourCost} onChange={e => setArmourCost(Number(e.target.value))} placeholder="Credits" className="input-sm w-20" />
           <input value={armourNotes} onChange={e => setArmourNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
@@ -505,7 +505,7 @@ export default function FighterDetail() {
           ) : (
             <input value={wargearName} onChange={e => setWargearName(e.target.value)} placeholder="Wargear name" className="input-sm flex-1" />
           )}
-          <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input type="number" min={0} value={wargearCost} onChange={e => setWargearCost(Number(e.target.value))} placeholder="Credits" className="input-sm w-20" />
           <input value={wargearNotes} onChange={e => setWargearNotes(e.target.value)} placeholder="Notes" className="input-sm w-32" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
@@ -546,7 +546,7 @@ export default function FighterDetail() {
           ) : (
             <input value={equipName} onChange={e => setEquipName(e.target.value)} placeholder="Item name" className="input-sm flex-1" />
           )}
-          <input type="number" min={0} value={equipCost} onChange={e => setEquipCost(Number(e.target.value))} placeholder="Cost" className="input-sm w-20" />
+          <input type="number" min={0} value={equipCost} onChange={e => setEquipCost(Number(e.target.value))} placeholder="Credits" className="input-sm w-20" />
           <button type="submit" className="btn-sm">Add</button>
         </form>
       </Section>
