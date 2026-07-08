@@ -1,6 +1,6 @@
 <?php
 // Configure these for your one.com MySQL credentials
-define('DB_HOST', 'globbin.se.mysql');
+define('DB_HOST', 'localhost');
 define('DB_NAME', 'c2s4tpyp0_globbin_se');
 define('DB_USER', 'c2s4tpyp0_globbin_se');
 define('DB_PASS', '131313');
