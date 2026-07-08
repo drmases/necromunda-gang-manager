@@ -1,6 +1,14 @@
 <?php
 require_once __DIR__ . '/config.local.php';
 
+function adjustGangCreditsForFighter(PDO $db, int $fighterId, int $delta): void {
+    $stmt = $db->prepare('SELECT gang_id FROM fighters WHERE id = ?');
+    $stmt->execute([$fighterId]);
+    $gangId = $stmt->fetchColumn();
+    if (!$gangId) return;
+    $db->prepare('UPDATE gangs SET credits = credits + ? WHERE id = ?')->execute([$delta, (int)$gangId]);
+}
+
 function getDb(): PDO {
     static $pdo = null;
     if ($pdo === null) {

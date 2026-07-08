@@ -57,6 +57,7 @@ if ($action === 'equipment') {
             'INSERT INTO equipment (fighter_id, name, type, cost, traits) VALUES (?,?,?,?,?)'
         );
         $stmt->execute([$id, trim($body['name'] ?? ''), $body['type'] ?? 'equipment', (int)($body['cost'] ?? 0), $traits]);
+        adjustGangCreditsForFighter($db, $id, -(int)($body['cost'] ?? 0));
         $row = $db->prepare('SELECT * FROM equipment WHERE id = ?');
         $row->execute([(int)$db->lastInsertId()]);
         $eq = $row->fetch();
@@ -65,7 +66,11 @@ if ($action === 'equipment') {
     }
     if ($method === 'DELETE') {
         $equipId = (int)($_GET['equip_id'] ?? 0);
+        $costRow = $db->prepare('SELECT cost FROM equipment WHERE id = ? AND fighter_id = ?');
+        $costRow->execute([$equipId, $id]);
+        $cost = (int)$costRow->fetchColumn();
         $db->prepare('DELETE FROM equipment WHERE id = ? AND fighter_id = ?')->execute([$equipId, $id]);
+        adjustGangCreditsForFighter($db, $id, $cost);
         jsonResponse(['deleted' => true]);
     }
 }
@@ -75,6 +80,7 @@ if ($action === 'weapon') {
         $body = getBody();
         $stmt = $db->prepare('INSERT INTO fighter_weapons (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
         $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        adjustGangCreditsForFighter($db, $id, -(int)($body['cost'] ?? 0));
         $row = $db->prepare('SELECT * FROM fighter_weapons WHERE id = ?');
         $row->execute([(int)$db->lastInsertId()]);
         $w = $row->fetch();
@@ -83,7 +89,11 @@ if ($action === 'weapon') {
     }
     if ($method === 'DELETE') {
         $weaponId = (int)($_GET['weapon_id'] ?? 0);
+        $costRow = $db->prepare('SELECT cost FROM fighter_weapons WHERE id = ? AND fighter_id = ?');
+        $costRow->execute([$weaponId, $id]);
+        $cost = (int)$costRow->fetchColumn();
         $db->prepare('DELETE FROM fighter_weapons WHERE id = ? AND fighter_id = ?')->execute([$weaponId, $id]);
+        adjustGangCreditsForFighter($db, $id, $cost);
         jsonResponse(['deleted' => true]);
     }
 }
@@ -93,6 +103,7 @@ if ($action === 'armour') {
         $body = getBody();
         $stmt = $db->prepare('INSERT INTO fighter_armour (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
         $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        adjustGangCreditsForFighter($db, $id, -(int)($body['cost'] ?? 0));
         $row = $db->prepare('SELECT * FROM fighter_armour WHERE id = ?');
         $row->execute([(int)$db->lastInsertId()]);
         $ar = $row->fetch();
@@ -101,7 +112,11 @@ if ($action === 'armour') {
     }
     if ($method === 'DELETE') {
         $armourId = (int)($_GET['armour_id'] ?? 0);
+        $costRow = $db->prepare('SELECT cost FROM fighter_armour WHERE id = ? AND fighter_id = ?');
+        $costRow->execute([$armourId, $id]);
+        $cost = (int)$costRow->fetchColumn();
         $db->prepare('DELETE FROM fighter_armour WHERE id = ? AND fighter_id = ?')->execute([$armourId, $id]);
+        adjustGangCreditsForFighter($db, $id, $cost);
         jsonResponse(['deleted' => true]);
     }
 }
@@ -111,6 +126,7 @@ if ($action === 'wargear') {
         $body = getBody();
         $stmt = $db->prepare('INSERT INTO fighter_wargear (fighter_id, name, cost, notes) VALUES (?,?,?,?)');
         $stmt->execute([$id, trim($body['name'] ?? ''), (int)($body['cost'] ?? 0), trim($body['notes'] ?? '')]);
+        adjustGangCreditsForFighter($db, $id, -(int)($body['cost'] ?? 0));
         $row = $db->prepare('SELECT * FROM fighter_wargear WHERE id = ?');
         $row->execute([(int)$db->lastInsertId()]);
         $wg = $row->fetch();
@@ -119,7 +135,11 @@ if ($action === 'wargear') {
     }
     if ($method === 'DELETE') {
         $wargearId = (int)($_GET['wargear_id'] ?? 0);
+        $costRow = $db->prepare('SELECT cost FROM fighter_wargear WHERE id = ? AND fighter_id = ?');
+        $costRow->execute([$wargearId, $id]);
+        $cost = (int)$costRow->fetchColumn();
         $db->prepare('DELETE FROM fighter_wargear WHERE id = ? AND fighter_id = ?')->execute([$wargearId, $id]);
+        adjustGangCreditsForFighter($db, $id, $cost);
         jsonResponse(['deleted' => true]);
     }
 }
