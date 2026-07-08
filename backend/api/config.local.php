@@ -5,4 +5,4 @@ define('DB_USER', 'c2s4tpyp0_globbin_se');
 define('DB_PASS', '131313');
 define('DB_CHARSET', 'utf8mb4');
 
-define('ADMIN_PASSWORD_HASH', '$2y$12$n9bKQOpDD7j8LrRhqiBQneE6XwixRSP2IShT5TcgLWciEZ3dClGfO');
+define('ADMIN_PASSWORD_HASH', '$2y$12$KfDHY/L2/o8bJsGoPj1OVOelEGo4AUtqG2LhQOmXuiWKIgu85xoVS');
