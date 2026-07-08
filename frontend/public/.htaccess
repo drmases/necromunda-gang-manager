@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /necromunda-gang-manager/
+
+RewriteCond %{REQUEST_URI} ^/necromunda-gang-manager/api/
+RewriteRule . - [L]
+
+RewriteRule ^index\.html$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /necromunda-gang-manager/index.html [L]
