@@ -21,16 +21,6 @@ jobs:
           npm ci
           npm run build
 
-      - name: Debug locate marvel-legendary
-        run: |
-          sudo apt-get install -y sshpass > /dev/null
-          echo "--- find marvel-legendary (depth 6) ---"
-          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' find . -maxdepth 6 -iname '*marvel*' 2>&1
-          echo "--- ls -la webroots/by-route ---"
-          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' ls -la webroots/by-route/ 2>&1
-          echo "--- stat necromunda vs marvel dirs if found ---"
-          sshpass -p '${{ secrets.FTP_PASSWORD }}' ssh -o StrictHostKeyChecking=no -p 22 '${{ secrets.FTP_USERNAME }}@${{ secrets.FTP_SERVER }}' bash -c "readlink -f webroots/www/necromunda-gang-manager 2>&1; find / -maxdepth 8 -iname 'marvel-legendary' -type d 2>/dev/null"
-
       - name: Deploy frontend
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
