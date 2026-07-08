@@ -3,6 +3,16 @@ import type { Gang, Fighter, Skill, Injury, Equipment, FighterTemplate, Weapon, 
 
 const api = axios.create({ baseURL: '/necromunda-gang-manager/api', withCredentials: true })
 
+api.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 401 && !err.config?.url?.includes('/auth.php')) {
+      window.location.href = '/necromunda-gang-manager/login?reason=auth'
+    }
+    return Promise.reject(err)
+  }
+)
+
 export const authApi = {
   status: () => api.get<{ authed: boolean }>('/auth.php'),
   login:  (password: string) => api.post<{ authed: boolean }>('/auth.php', { password }),
