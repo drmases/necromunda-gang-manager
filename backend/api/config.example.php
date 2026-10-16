@@ -1,6 +1,7 @@
 <?php
-// Copy this file to config.local.php on the server (never commit config.local.php).
-// config.local.php is gitignored — it must be created/edited directly on the server.
+// The deploy workflow generates config.local.php from the GitHub secrets DB_PASS and
+// ADMIN_PASSWORD (plain text; it is hashed during the build). Never commit config.local.php.
+// For a manual setup, copy this file to config.local.php on the server.
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'your_db_name');
 define('DB_USER', 'your_db_user');

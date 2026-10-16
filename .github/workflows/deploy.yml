@@ -51,6 +51,30 @@ jobs:
           local_path: ./frontend/dist/.htaccess
           remote_path: ${{ secrets.FTP_FRONTEND_DIR }}
 
+      # config.local.php is never committed; it is built here from repo secrets.
+      # Host, database and user are not secret; the passwords are.
+      - name: Build backend config from secrets
+        env:
+          DB_PASS: ${{ secrets.DB_PASS }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+        run: |
+          for v in DB_PASS ADMIN_PASSWORD; do
+            [ -n "${!v}" ] || { echo "Secret $v is missing"; exit 1; }
+          done
+          php -r '
+            $c = [
+              "DB_HOST" => "localhost",
+              "DB_NAME" => "c2s4tpyp0_globbin_se",
+              "DB_USER" => "c2s4tpyp0_globbin_se",
+              "DB_PASS" => getenv("DB_PASS"),
+              "DB_CHARSET" => "utf8mb4",
+              "ADMIN_PASSWORD_HASH" => password_hash(getenv("ADMIN_PASSWORD"), PASSWORD_DEFAULT),
+            ];
+            echo "<?php", PHP_EOL;
+            foreach ($c as $k => $v) echo "define(", var_export($k, true), ", ", var_export($v, true), ");", PHP_EOL;
+          ' > backend/api/config.local.php
+          php -l backend/api/config.local.php
+
       - name: Deploy backend
         uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
